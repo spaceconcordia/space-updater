@@ -9,6 +9,9 @@
 #include <sys/stat.h>
 #include <cstring>
 #include "fileIO.h"
+//----------------------------------------------
+//  Constructor
+//----------------------------------------------
 ProcessUpdater::ProcessUpdater(){
     /*  */
     newJobPath = NULL;
@@ -33,6 +36,9 @@ ProcessUpdater::ProcessUpdater(const char* newJob, const char* currentJob, const
         closedir(testExist);
     }
 }
+//----------------------------------------------
+//  Destructor
+//----------------------------------------------
 ProcessUpdater::~ProcessUpdater(){
     /* */
 }

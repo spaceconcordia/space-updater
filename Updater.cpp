@@ -29,7 +29,7 @@ Updater::~Updater(){
 //----------------------------------------------
 //  StartRollback
 //----------------------------------------------
-bool Updater::StartRollback() const{            //TODO 
+bool Updater::StartRollback() const{
     bool isSuccess = false;
     int retry = 0;
     char path_tempo_current[BUFFER_SIZE];
@@ -79,7 +79,7 @@ bool Updater::StartUpdate() const {
     struct dirent* item;
     if (CheckForRollback() == true){
         if (StartRollback() == false){
-            //TODO if StartRollback() fails... 
+            //TODO if StartRollback() fails... delete Rollback and continue?
         }
     }
      
@@ -98,7 +98,7 @@ bool Updater::StartUpdate() const {
                 }else{
                     printf("Update failure : %s\n", path_tempo_new);
                 }
-                //TODO   if ProcessUpdater fails ... message and delete new Job?
+                //TODO   if ProcessUpdater fails ... message/log and delete new Job 
                 rmdir(path_tempo_new);
                 delete current_process;
             }
@@ -152,5 +152,5 @@ void Updater::ExtractJobName(char* jobName) const{
         strcpy(path, strstr(path, "current/") + 8);
     }
     strcpy(jobName, path);
+//printf("jobName : %s\n", jobName);
 }
-

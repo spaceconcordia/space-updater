@@ -63,7 +63,7 @@ TEST(UpdaterTestGroup, StartUpdate_NewFolderIsNotEmptyAndRollback_ReturnsTrue){
         fprintf(file2, "JobC Old");
         fclose(file2);
     FILE* rollbackFile = fopen("test-rollback/rollback.txt", "w+");
-    fprintf(rollbackFile, "asdf////test-old/JobC");         // TODO check bug when the string begins by "////"
+    fprintf(rollbackFile, "asdf////test-old/JobC");
     fclose(rollbackFile);
 
     CHECK(updater->StartUpdate() == true);
@@ -104,26 +104,12 @@ TEST(UpdaterTestGroup, StartRollback_RollbackAndNoBackupInOld_ReturnsFalse){
 //                  ProcessTestGroup
 //************************************************************
 //************************************************************
-TEST_GROUP(ProcessTestGroup)                    // Good ProcessUpdater
-{
+TEST_GROUP(ProcessTestGroup){
     ProcessUpdater* process_updater;
     void setup(){
         mkdir("test-new", S_IRWXU);
-            mkdir("test-new/update", S_IRWXU);
-            FILE* file = fopen("test-new/update/new-test-file.txt", "w+");
-            fprintf(file,"some text to test");
-                mkdir("test-new/update/sub-dir", S_IRWXU);
         mkdir("test-old", S_IRWXU);
-            mkdir("test-old/back-up", S_IRWXU);
-            FILE* file2 = fopen("test-old/back-up/backup-file-test.txt", "w+");
-            fprintf(file2, "back up version");
         mkdir("test-current", S_IRWXU);
-            mkdir("test-current/v1", S_IRWXU);
-            FILE* file3 = fopen("test-current/v1/current-file-test.txt", "w+");
-            fprintf(file3, "version 1 test");
-        fclose(file);
-        fclose(file2);
-        fclose(file3);
         process_updater = new ProcessUpdater("test-new", "test-current", "test-old");
 
     }
@@ -136,13 +122,25 @@ TEST_GROUP(ProcessTestGroup)                    // Good ProcessUpdater
         rmdir("test-old");
         rmdir("test-current");//*/
         delete process_updater;
-  
     }
 };
 //----------------------------------------------
 //  StartUpdate 
 //----------------------------------------------
 TEST(ProcessTestGroup, StartUpdate_newIsNotEmptyAndFileSystemIsGood_ReturnsTrue){
+    mkdir("test-new/update", S_IRWXU);
+        FILE* file = fopen("test-new/update/new-test-file.txt", "w+");
+        fprintf(file,"some text to test");
+        fclose(file);
+        mkdir("test-new/update/sub-dir", S_IRWXU);
+    mkdir("test-old/back-up", S_IRWXU);
+        FILE* file2 = fopen("test-old/back-up/backup-file-test.txt", "w+");
+        fprintf(file2, "back up version");
+        fclose(file2);
+    mkdir("test-current/v1", S_IRWXU);
+        FILE* file3 = fopen("test-current/v1/current-file-test.txt", "w+");
+        fprintf(file3, "version 1 test");
+        fclose(file3);
     CHECK(process_updater->StartUpdate() == true);
 }
 //************************************************************
@@ -229,7 +227,6 @@ TEST(FileIOTestGroup, MoveFile_FileIsPresent_ReturnsTrue){
     CHECK( MoveFile(src,dest) == true);
 
     remove(dest);
-
 }
 //----------------------------------------------
 //  MoveFile_FileIsNotPresent_ReturnsFalse

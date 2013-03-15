@@ -38,7 +38,6 @@ bool DeleteDirectoryContent(const char* toDelete){
         isSuccess = false;
     }
     return isSuccess;
-//    return false; // crash the function
 }
 //----------------------------------------------
 //  CopyDirRecursively
