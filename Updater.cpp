@@ -6,6 +6,7 @@
 #include "Updater.h"
 #include <sys/stat.h>
 #include "fileIO.h"
+#include <unistd.h>     // rmdir
 #include "ProcessUpdater.h"
 #include <cstring>
 const char* Updater::rollbackFileName = "rollback.txt";         // TODO : change file name
@@ -79,7 +80,7 @@ bool Updater::StartUpdate() const {
     struct dirent* item;
     if (CheckForRollback() == true){
         if (StartRollback() == false){
-            //TODO if StartRollback() fails... delete Rollback and continue?
+            //TODO if StartRollback() fails... delete Rollback and continue... LOG
         }
     }
      

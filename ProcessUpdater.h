@@ -19,6 +19,7 @@ class ProcessUpdater{
         ~ProcessUpdater();
 
         bool StartUpdate() const;                               // Returns false only if the update fails.
+
     private :
         bool CheckIfNewJobIsNotEmpty() const; 
 
