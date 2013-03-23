@@ -20,8 +20,8 @@ ProcessUpdater.o : ProcessUpdater.cpp ProcessUpdater.h fileIO.h
 Updater.o :Updater.cpp Updater.h ProcessUpdater.h fileIO.h
 	$(CXX) -c $< -o $@
 
-AllTests: AllTests.cpp fileIO.o ProcessUpdater.o Updater.o
-	$(CXX) $(CFLAGS) $(CPPFLAGS) $(CXXFLAGS) -I/home/jamg85/Concordia/Space/Updater -o AllTests $^ tests/Updater-test.cpp $(LD_LIBRARIES) 
+AllTests: AllTests.cpp tests/Updater-test.cpp fileIO.o ProcessUpdater.o Updater.o
+	$(CXX) $(CFLAGS) $(CPPFLAGS) $(CXXFLAGS) -I/home/jamg85/Concordia/Space/Updater -o AllTests $^ $(LD_LIBRARIES) 
 
 clean:
 	rm *.o

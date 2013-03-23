@@ -46,7 +46,7 @@ bool Updater::StartRollback() const{
                 DeleteDirectoryContent(rollbackDirPath);                                        // if not delete rollback.
             }
             if (isSuccess == true){
-                isSuccess = CopyDirRecursively(path_tempo_current, "temp");
+                isSuccess = CopyDirRecursively(path_tempo_current, "tempo");
             }
             if (isSuccess == true){
                 isSuccess = DeleteDirectoryContent(path_tempo_current);       
@@ -55,11 +55,11 @@ bool Updater::StartRollback() const{
                 if ((isSuccess = CopyDirRecursively(path_tempo_old, path_tempo_current)) == false){
                     CopyDirRecursively("tempo", path_tempo_current);                                // Restores the original content.
                 }
-            DeleteDirectoryContent(rollbackDirPath);
             }
-
-            DeleteDirectoryContent("tempo");
-            rmdir("tempo");
+                        
+            DeleteDirectoryContent(rollbackDirPath);                                                // Clear rollbackDirPath
+            DeleteDirectoryContent("tempo");                                                        // Clear the temporary directory.
+            rmdir("tempo");                                                                         // Remove temporary dir.
             retry += 1;
         }
     }else{
@@ -80,8 +80,10 @@ bool Updater::StartUpdate() const {
     struct dirent* item;
     if (CheckForRollback() == true){
         if (StartRollback() == false){
-            //TODO if StartRollback() fails... delete Rollback and continue... LOG
+            //TODO if StartRollback() fails... LOG 
         }
+        //TODO log success
+        puts("Rollback success");
     }
      
     if (CheckForUpdate() == true && CheckForRollback() == false){

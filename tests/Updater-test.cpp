@@ -42,6 +42,7 @@ TEST_GROUP(UpdaterTestGroup)
 //  StartUpdate 
 //----------------------------------------------
 TEST(UpdaterTestGroup, StartUpdate_NewFolderIsNotEmptyAndRollback_ReturnsTrue){
+    printf("StartUpdate_NewFolderIsNotEmptyAndRollback_ReturnsTrue : ");
     mkdir("test-new/JobA", S_IRWXU);
         FILE* JobANew = fopen("test-new/JobA/new-JobA.txt", "w+");
         fprintf(JobANew,"some text to test");
@@ -127,12 +128,23 @@ TEST_GROUP(ProcessTestGroup){
 //----------------------------------------------
 //  StartUpdate 
 //----------------------------------------------
-TEST(ProcessTestGroup, StartUpdate_newIsNotEmptyAndFileSystemIsGood_ReturnsTrue){
+TEST(ProcessTestGroup, StartUpdate_newIsNotEmpty_ReturnsTrue){
     mkdir("test-new/update", S_IRWXU);
         FILE* file = fopen("test-new/update/new-test-file.txt", "w+");
         fprintf(file,"some text to test");
         fclose(file);
         mkdir("test-new/update/sub-dir", S_IRWXU);
+    mkdir("test-old/back-up", S_IRWXU);
+        FILE* file2 = fopen("test-old/back-up/backup-file-test.txt", "w+");
+        fprintf(file2, "back up version");
+        fclose(file2);
+    mkdir("test-current/v1", S_IRWXU);
+        FILE* file3 = fopen("test-current/v1/current-file-test.txt", "w+");
+        fprintf(file3, "version 1 test");
+        fclose(file3);
+    CHECK(process_updater->StartUpdate() == true);
+}
+TEST(ProcessTestGroup, StartUpdate_newIsEmpty_ReturnsTrue){
     mkdir("test-old/back-up", S_IRWXU);
         FILE* file2 = fopen("test-old/back-up/backup-file-test.txt", "w+");
         fprintf(file2, "back up version");
