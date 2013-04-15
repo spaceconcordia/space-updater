@@ -1,0 +1,3 @@
+reboot -n -f  // reboot Q6
+[root@q6-concordia-1 current]# writeprotect off
+

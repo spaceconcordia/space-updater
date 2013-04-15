@@ -29,7 +29,7 @@ clean:
 	rm *.o 
 
 allPC: Q6.cpp fileIO.o ProcessUpdater.o Updater.o
-	$(CXX) $^ -o PC-Test
+	$(CXX) -o PC-Test
 
 allQ6:Q6-Updater
 
