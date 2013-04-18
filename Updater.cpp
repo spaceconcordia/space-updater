@@ -24,6 +24,7 @@ Updater::Updater(const char* newDir, const char* currentDir, const char* oldDir,
     oldDirPath = oldDir;
     currentDirPath = currentDir;
     rollbackDirPath = rollPath;
+    // TODO Check if the directories are valid.
 }
 Updater::~Updater(){
 }
@@ -35,7 +36,7 @@ bool Updater::StartRollback() const{
     int retry = 0;
     char path_tempo_current[BUFFER_SIZE];
     char path_tempo_old[BUFFER_SIZE];
-    char job_name[BUFFER_NAME_SIZE] = "\0";                                                     //
+    char job_name[BUFFER_NAME_SIZE] = "\0";                                                     
     if (CheckForRollback() == true){
         while (CheckForRollback() == true && isSuccess == false && retry < MAX_RETRY){
             mkdir("tempo", S_IRWXU);
@@ -44,6 +45,7 @@ bool Updater::StartRollback() const{
             strcat(strcat(strcpy(path_tempo_old,     oldDirPath), "/"),     job_name);
             if ((isSuccess = IsBackUpAvailable(path_tempo_old)) == false){                      // checks if there is a backup available
                 DeleteDirectoryContent(rollbackDirPath);                                        // if not delete rollback.
+//                isSuccess = true;
             }
             if (isSuccess == true){
                 isSuccess = CopyDirRecursively(path_tempo_current, "tempo");
@@ -137,8 +139,12 @@ bool Updater::IsBackUpAvailable(const char* path) const{
 void Updater::ExtractPathToRollback(char* path) const{
     char path_tempo_dirToUpdate[BUFFER_SIZE];
     FILE* file = fopen(strcat(strcat(strcpy(path_tempo_dirToUpdate,rollbackDirPath), "/"), rollbackFileName), "r");// Open rollbackFileName for Reading
-    fscanf(file, "%s", path);
-    fclose(file);
+    if (file != NULL){
+        fscanf(file, "%s", path);
+        fclose(file);
+    }else{
+        perror("in ExtractPathToRollback() : can't open the file");
+    }
 }
 //----------------------------------------------
 //  ExtractJobName
