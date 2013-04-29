@@ -1,4 +1,0 @@
- 
-git add .
-git commit -a -m "asdfsadf"
-git push origin master

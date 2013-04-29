@@ -1,5 +1,5 @@
 //******************************************/
-//  SPACE CONCORDIA 2013
+//  JAMG @ SPACE CONCORDIA 2013
 //
 //
 //******************************************/
@@ -9,7 +9,7 @@
 #include <unistd.h>     // rmdir
 #include "ProcessUpdater.h"
 #include <cstring>
-const char* Updater::rollbackFileName = "rollback.txt";         // TODO : change file name
+const char* Updater::rollbackFileName = "rollback.txt";   
 //----------------------------------------------
 //  Constructor
 //----------------------------------------------
@@ -45,7 +45,8 @@ bool Updater::StartRollback() const{
             strcat(strcat(strcpy(path_tempo_old,     oldDirPath), "/"),     job_name);
             if ((isSuccess = IsBackUpAvailable(path_tempo_old)) == false){                      // checks if there is a backup available
                 DeleteDirectoryContent(rollbackDirPath);                                        // if not delete rollback.
-//                isSuccess = true;
+                // current -> old // CHECK
+                // delete current
             }
             if (isSuccess == true){
                 isSuccess = CopyDirRecursively(path_tempo_current, "tempo");
@@ -83,9 +84,11 @@ bool Updater::StartUpdate() const {
     if (CheckForRollback() == true){
         if (StartRollback() == false){
             //TODO if StartRollback() fails... LOG 
-        }
+            puts("Rollback failed");
+        }else{
         //TODO log success
-        puts("Rollback success");
+            puts("Rollback success");
+        }
     }
      
     if (CheckForUpdate() == true && CheckForRollback() == false){
