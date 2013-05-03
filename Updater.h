@@ -29,6 +29,7 @@ class Updater{
         ~Updater();
 
         bool StartRollback() const;
+        bool StartRollback(const char*) const;
         bool StartUpdate() const;                                       // Returns false only if the update fails.
         bool CheckForUpdate() const;
         bool CheckForRollback() const;

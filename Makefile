@@ -26,10 +26,12 @@ AllTests: AllTests.cpp tests/Updater-test.cpp fileIO.o ProcessUpdater.o Updater.
 	$(CXX) $(CFLAGS) $(CPPFLAGS) $(CXXFLAGS) -I/home/jamg85/Concordia/Space/Updater -o AllTests $^ $(LD_LIBRARIES) 
 
 clean:
-	rm *.o 
+	rm -f *.o 
 
-allPC: Q6.cpp fileIO.o ProcessUpdater.o Updater.o
-	$(CXX) $^ -o PC-Test
+allPC: PC-Updater
+
+PC-Updater : PC.cpp fileIO.o ProcessUpdater.o Updater.o
+	$(CXX) $^ -o PC-Updater
 
 allQ6:Q6-Updater
 

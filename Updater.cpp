@@ -33,16 +33,28 @@ Updater::~Updater(){
 //----------------------------------------------
 bool Updater::StartRollback() const{
     bool isSuccess = false;
+    char job_name[BUFFER_NAME_SIZE] = "\0";                                                     
+    if (CheckForRollback() == true){
+        ExtractJobName(job_name);
+        isSuccess = StartRollback(job_name);
+        DeleteDirectoryContent(rollbackDirPath);                                                // Clear rollbackDirPath
+    }else{
+        isSuccess = true;
+        printf("Rollback folder is empty... nothing to do.\n");
+    }
+    return isSuccess;
+}
+bool Updater::StartRollback(const char* appName) const{
+    bool isSuccess = false;
     int retry = 0;
     char path_tempo_current[BUFFER_SIZE];
     char path_tempo_old[BUFFER_SIZE];
     char job_name[BUFFER_NAME_SIZE] = "\0";                                                     
-    if (CheckForRollback() == true){
-        while (CheckForRollback() == true && isSuccess == false && retry < MAX_RETRY){
             mkdir("tempo", S_IRWXU);
-            ExtractJobName(job_name);
+            strcat(job_name, appName);
             strcat(strcat(strcpy(path_tempo_current, currentDirPath), "/"), job_name);
             strcat(strcat(strcpy(path_tempo_old,     oldDirPath), "/"),     job_name);
+        while (isSuccess == false && retry < MAX_RETRY){
             if ((isSuccess = IsBackUpAvailable(path_tempo_old)) == false){                      // checks if there is a backup available
                 DeleteDirectoryContent(rollbackDirPath);                                        // if not delete rollback.
                 // current -> old // CHECK
@@ -60,15 +72,10 @@ bool Updater::StartRollback() const{
                 }
             }
                         
-            DeleteDirectoryContent(rollbackDirPath);                                                // Clear rollbackDirPath
             DeleteDirectoryContent("tempo");                                                        // Clear the temporary directory.
             rmdir("tempo");                                                                         // Remove temporary dir.
             retry += 1;
         }
-    }else{
-        isSuccess = true;
-        printf("Rollback folder is empty... nothing to do.");
-    }
     return isSuccess;
 }
 //----------------------------------------------
