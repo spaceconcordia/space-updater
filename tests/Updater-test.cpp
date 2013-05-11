@@ -75,7 +75,7 @@ TEST(UpdaterTestGroup, StartUpdate_NewFolderIsEmptyNoRollBack_ReturnsTrue){
 //----------------------------------------------
 //  StartRollback 
 //----------------------------------------------
-TEST(UpdaterTestGroup, StartRollback_RollbackAndBackupInOld_ReturnsTrue){
+TEST(UpdaterTestGroup, StartRollback_RollbackAndBackupInOld_ReturnsTrue){               // UPDTR-07
     mkdir("test-current/JobC", S_IRWXU);
     mkdir("test-current/JobC/C", S_IRWXU);
         FILE* file3 = fopen("test-current/JobC/C/currentJobC.txt", "w+");
@@ -94,7 +94,14 @@ TEST(UpdaterTestGroup, StartRollback_RollbackAndBackupInOld_ReturnsTrue){
 TEST(UpdaterTestGroup, StartRollback_RollbackFolderIsEmpty_ReturnsTrue){
     CHECK(updater->StartRollback() == true);
 }
-TEST(UpdaterTestGroup, StartRollback_RollbackAndNoBackupInOld_ReturnsFalse){
+TEST(UpdaterTestGroup, StartRollback_RollbackAndNoBackupInOld_ReturnsTrue){             // UPDTR-06
+    FILE* rollbackFile = fopen("test-rollback/rollback.txt", "w+");
+    fprintf(rollbackFile, "asdf////test-old/JobC");
+    fclose(rollbackFile);
+    mkdir("test-current/JobC", S_IRWXU);
+    CHECK(updater->StartRollback() == true);
+}
+TEST(UpdaterTestGroup, StartRollback_RollbackUnexistingFile_ReturnsFalse){              // UPDTR-05
     FILE* rollbackFile = fopen("test-rollback/rollback.txt", "w+");
     fprintf(rollbackFile, "asdf////test-old/JobC");
     fclose(rollbackFile);

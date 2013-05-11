@@ -46,6 +46,7 @@ bool Updater::StartRollback() const{
 }
 bool Updater::StartRollback(const char* appName) const{
     bool isSuccess = false;
+    bool isBackUpAvailable = false;
     int retry = 0;
     char path_tempo_current[BUFFER_SIZE];
     char path_tempo_old[BUFFER_SIZE];
@@ -55,18 +56,13 @@ bool Updater::StartRollback(const char* appName) const{
             strcat(strcat(strcpy(path_tempo_current, currentDirPath), "/"), job_name);
             strcat(strcat(strcpy(path_tempo_old,     oldDirPath), "/"),     job_name);
         while (isSuccess == false && retry < MAX_RETRY){
-            if ((isSuccess = IsBackUpAvailable(path_tempo_old)) == false){                      // checks if there is a backup available
-                DeleteDirectoryContent(rollbackDirPath);                                        // if not delete rollback.
-                // current -> old // CHECK
-                // delete current
-            }
-            if (isSuccess == true){
-                isSuccess = CopyDirRecursively(path_tempo_current, "tempo");
-            }
+            
+            isSuccess = CopyDirRecursively(path_tempo_current, "tempo");
+
             if (isSuccess == true){
                 isSuccess = DeleteDirectoryContent(path_tempo_current);       
             }
-            if (isSuccess == true){
+            if (isSuccess == true && IsBackUpAvailable(path_tempo_old) == true){
                 if ((isSuccess = CopyDirRecursively(path_tempo_old, path_tempo_current)) == false){
                     CopyDirRecursively("tempo", path_tempo_current);                                // Restores the original content.
                 }
@@ -93,7 +89,7 @@ bool Updater::StartUpdate() const {
             //TODO if StartRollback() fails... LOG 
             puts("Rollback failed");
         }else{
-        //TODO log success
+            //TODO log success
             puts("Rollback success");
         }
     }
@@ -141,7 +137,11 @@ bool Updater::CheckForRollback() const{
 //  IsBackUpAvailable
 //----------------------------------------------
 bool Updater::IsBackUpAvailable(const char* path) const{
-    return IsDirectoryNotEmpty(path);
+    if (IsDirectoryNotEmpty(path) == false){
+        perror("In IsBackUpAvailable(), no back-up available");
+        return false;
+    }
+    return true;
 }
 //----------------------------------------------
 //  ExtractPathToRollback

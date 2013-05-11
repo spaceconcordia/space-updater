@@ -137,7 +137,7 @@ bool IsDirectoryNotEmpty(const char* dir){
         }
     closedir(dirToCheck);                               // 0 on success, -1 on failure 
     }else{
-        perror ("IsDirectoryNotEmpty() : Couldn't open the directory ");
+        perror ("In IsDirectoryNotEmpty(), couldn't open the directory ");
     }
     return (counter != 0); 
 }

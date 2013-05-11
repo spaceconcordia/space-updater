@@ -83,7 +83,7 @@ bool ProcessUpdater::StartUpdate() const{
                     CopyDirRecursively("tempo", oldJobPath);
                 }
             }
- // TODO check ... delete newJob in any case!?       
+
             DeleteDirectoryContent("tempo");
             rmdir("tempo");
             retry += 1;
