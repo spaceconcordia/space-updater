@@ -49,7 +49,7 @@ Updater-Q6.o : src/Updater.cpp include/Updater.h include/ProcessUpdater.h includ
 	$(MICRO_BLAZE) $(MICRO_FLAGS) $(INCLUDE) -c $< -o $@
 
 Updater-Q6: src/Q6.cpp fileIO-Q6.o ProcessUpdater-Q6.o Updater-Q6.o
-	$(MICRO_BLAZE) $(MICRO_FLAGS) $(INCLUDE) -o Q6-Updater $^ 
+	$(MICRO_BLAZE) $(MICRO_FLAGS) $(INCLUDE) -o Updater-Q6 $^ 
 
 #
 # CleanUp
