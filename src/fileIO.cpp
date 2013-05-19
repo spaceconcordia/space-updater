@@ -33,6 +33,7 @@ bool DeleteDirectoryContent(const char* toDelete){
                 isSuccess = DeleteFile(path_tempo);
             }
         }
+
         closedir(dirToDelete);
     }else{
         isSuccess = false;
@@ -106,6 +107,7 @@ bool DeleteFile(const char* fileToDelete){
        perror("error deleting the file"); 
         isSuccess = false;
     }
+
     return isSuccess;
 }
 //----------------------------------------------
@@ -119,6 +121,7 @@ bool MoveFile(const char* src, const char* dest){
     if ( !DeleteFile(src) ){
         isSuccess = false;
     }
+
     return isSuccess;
 }
 //----------------------------------------------
@@ -139,6 +142,19 @@ bool IsDirectoryNotEmpty(const char* dir){
     }else{
         perror ("In IsDirectoryNotEmpty(), couldn't open the directory ");
     }
+
     return (counter != 0); 
+}
+//----------------------------------------------
+//  IsDirectoryExists()
+//----------------------------------------------
+bool IsDirectoryExists(const char* path){
+    DIR* testExist = opendir(path);
+    if (testExist == NULL){
+        return false;
+    }
+
+    closedir(testExist);
+    return true;
 }
 

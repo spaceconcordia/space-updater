@@ -14,4 +14,5 @@ bool MoveFile(const char* src, const char* dest);
 bool IsDirectoryNotEmpty(const char*); 
 bool CopyDirRecursively(const char*, const char*);
 bool DeleteDirectoryContent(const char*);
+bool IsDirectoryExists(const char*);
 #endif

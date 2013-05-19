@@ -13,20 +13,30 @@ const char* Updater::rollbackFileName = "rollback.txt";
 //----------------------------------------------
 //  Constructor
 //----------------------------------------------
-Updater::Updater(){ //TODO : hardcode the path.
-    newDirPath = NULL;
-    oldDirPath = NULL;
-    currentDirPath = NULL;
-    rollbackDirPath = NULL;
+Updater::Updater(){                                 // Default : Q6 paths
+    newDirPath = "/home/apps/new";
+    oldDirPath = "/home/apps/old";
+    currentDirPath = "/home/apps/current";
+    rollbackDirPath = "/home/apps/rollback";
+
+    Updater(newDirPath, oldDirPath, currentDirPath, rollbackDirPath);
 }
 Updater::Updater(const char* newDir, const char* currentDir, const char* oldDir, const char* rollPath){
-    newDirPath = newDir;
-    oldDirPath = oldDir;
-    currentDirPath = currentDir;
-    rollbackDirPath = rollPath;
-    // TODO Check if the directories are valid.
+    if (IsDirectoryExists(newDir) == true && IsDirectoryExists(currentDir) == true 
+                                                    && IsDirectoryExists(oldDir) == true 
+                                                        && IsDirectoryExists(rollPath) == true ){
+        newDirPath = newDir;
+        oldDirPath = oldDir;
+        currentDirPath = currentDir;
+        rollbackDirPath = rollPath;
+    
+    }else{
+        perror ("Error... Check that the directories exist.");
+        exit(1);
+    }
 }
 Updater::~Updater(){
+    //*/
 }
 //----------------------------------------------
 //  StartRollback

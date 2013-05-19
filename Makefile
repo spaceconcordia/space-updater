@@ -37,7 +37,7 @@ PC-Updater : src/PC.cpp fileIO.o ProcessUpdater.o Updater.o
 #	Compilation for the Q6. Microblaze.
 #
 
-Q6:Q6-Updater
+Q6 : Updater-Q6
 
 fileIO-Q6.o: src/fileIO.cpp include/fileIO.h
 	$(MICRO_BLAZE) $(MICRO_FLAGS) $(INCLUDE) -c $< -o $@
@@ -48,13 +48,15 @@ ProcessUpdater-Q6.o : src/ProcessUpdater.cpp include/ProcessUpdater.h include/fi
 Updater-Q6.o : src/Updater.cpp include/Updater.h include/ProcessUpdater.h include/fileIO.h
 	$(MICRO_BLAZE) $(MICRO_FLAGS) $(INCLUDE) -c $< -o $@
 
-Q6-Updater: src/Q6.cpp fileIO-Q6.o ProcessUpdater-Q6.o Updater-Q6.o
+Updater-Q6: src/Q6.cpp fileIO-Q6.o ProcessUpdater-Q6.o Updater-Q6.o
 	$(MICRO_BLAZE) $(MICRO_FLAGS) $(INCLUDE) -o Q6-Updater $^ 
 
 #
 # CleanUp
 #
+cleanObj:
+	rm -f *.o *~
 
-clean:
-	rm -f *.o 
-	rm -f *~ AllTests PC-Updater Q6-Updater
+cleanAll:
+	rm -f *.o *~
+	rm -f AllTests PC-Updater Q6-Updater

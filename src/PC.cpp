@@ -5,9 +5,13 @@ int main(){
     const char* path_old      = "/home/jamg85/apps/old";
     const char* path_rollback = "/home/jamg85/apps/rollback";
     Updater* updater = new Updater(path_new, path_current, path_old, path_rollback);
-    updater->StartUpdate();
+    bool isSuccess = updater->StartUpdate();
 
     delete updater;
 
-    return 0;
+    if (isSuccess == true){
+        return 0;
+    }else{
+        return 1;
+    }
 }
