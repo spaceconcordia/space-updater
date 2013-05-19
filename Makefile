@@ -57,4 +57,4 @@ Q6-Updater: src/Q6.cpp fileIO-Q6.o ProcessUpdater-Q6.o Updater-Q6.o
 
 clean:
 	rm -f *.o 
-	rm -f *~ AllTests PC-Updater
+	rm -f *~ AllTests PC-Updater Q6-Updater
