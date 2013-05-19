@@ -18,13 +18,17 @@ Updater::Updater(){                                 // Default : Q6 paths
     oldDirPath = "/home/apps/old";
     currentDirPath = "/home/apps/current";
     rollbackDirPath = "/home/apps/rollback";
-
-    Updater(newDirPath, oldDirPath, currentDirPath, rollbackDirPath);
+    if (IsDirectoryExists(newDirPath) == false && IsDirectoryExists(currentDirPath) == false 
+                                                    && IsDirectoryExists(oldDirPath) == false 
+                                                        && IsDirectoryExists(rollbackDirPath) == false){
+        perror ("Error... Check that the directories exist.");
+        exit(1);
+    }
 }
 Updater::Updater(const char* newDir, const char* currentDir, const char* oldDir, const char* rollPath){
     if (IsDirectoryExists(newDir) == true && IsDirectoryExists(currentDir) == true 
                                                     && IsDirectoryExists(oldDir) == true 
-                                                        && IsDirectoryExists(rollPath) == true ){
+                                                        && IsDirectoryExists(rollPath) == true){
         newDirPath = newDir;
         oldDirPath = oldDir;
         currentDirPath = currentDir;
