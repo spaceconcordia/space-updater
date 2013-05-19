@@ -54,7 +54,7 @@ Updater-Q6: src/Q6.cpp fileIO-Q6.o ProcessUpdater-Q6.o Updater-Q6.o
 #
 # CleanUp
 #
-clean :
+cleanObj:
 	rm -f *.o *~
 
 cleanAll:
