@@ -59,4 +59,4 @@ clean :
 
 cleanAll:
 	rm -f *.o *~
-	rm -f AllTests PC-Updater Q6-Updater
+	rm -f AllTests PC-Updater Updater-Q6
