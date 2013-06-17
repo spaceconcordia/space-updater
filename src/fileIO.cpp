@@ -7,14 +7,13 @@
 #include <cstring>
 #include <sys/types.h>
 #include <dirent.h>
-
 #include <sys/stat.h>
 #include <unistd.h>
 #include <cstdio>
 
 const int BUFFER_SIZE = 100;
 //----------------------------------------------
-//  deleteDirectory
+//  DeleteDirectory
 //----------------------------------------------
 bool DeleteDirectoryContent(const char* toDelete){
     bool isSuccess = true;
@@ -24,12 +23,13 @@ bool DeleteDirectoryContent(const char* toDelete){
     if (dirToDelete != NULL){
         while((item = readdir(dirToDelete)) && (isSuccess == true)){
             if (item->d_type == DT_DIR && strncmp(item->d_name, ".", 1) != 0 && strncmp(item->d_name,"..",2) !=0){
-                strcat(strcat(strcpy(path_tempo, toDelete), "/"), item->d_name);
+                safe_strcat(safe_strcat(safe_strcpy(path_tempo, toDelete, BUFFER_SIZE), "/", BUFFER_SIZE), item->d_name, BUFFER_SIZE);
+                printf("CHECK : %s\n", path_tempo);
                 DeleteDirectoryContent(path_tempo);
                 rmdir(path_tempo);
 
             }else if(item->d_type == DT_REG){
-                strcat(strcat(strcpy(path_tempo, toDelete), "/"), item->d_name);
+                safe_strcat(safe_strcat(safe_strcpy(path_tempo, toDelete, BUFFER_SIZE), "/", BUFFER_SIZE), item->d_name, BUFFER_SIZE);
                 isSuccess = DeleteFile(path_tempo);
             }
         }
@@ -59,8 +59,8 @@ bool CopyDirRecursively(const char* src, const char* dest){
     if (toCopy != NULL){
         while((item = readdir(toCopy)) && (isSuccess == true)){
             
-            strcat(strcat(strcpy(path_tempo_src,   src), "/"), item->d_name);
-            strcat(strcat(strcpy(path_tempo_dest, dest), "/"), item->d_name);
+            safe_strcat(safe_strcat(safe_strcpy(path_tempo_src,   src, BUFFER_SIZE), "/", BUFFER_SIZE), item->d_name, BUFFER_SIZE);
+            safe_strcat(safe_strcat(safe_strcpy(path_tempo_dest, dest, BUFFER_SIZE), "/", BUFFER_SIZE), item->d_name, BUFFER_SIZE);
             
             if (item->d_type == DT_DIR && strncmp(item->d_name, ".", 1) != 0 && strncmp(item->d_name,"..",2) !=0){  // item is a directory.
                 mkdir(path_tempo_dest, S_IRWXU );
@@ -76,7 +76,7 @@ bool CopyDirRecursively(const char* src, const char* dest){
     return isSuccess;
 }
 //----------------------------------------------
-//  copyFile
+//  CopyFile
 //----------------------------------------------
 bool CopyFile(const char* src, const char* dest){
     bool isSuccess = true;
@@ -88,7 +88,7 @@ bool CopyFile(const char* src, const char* dest){
         remove (dest);
         isSuccess = false;
     }else{
-        while (fread(buffer, 1, 1, in)){            // TODO : error checking here.
+        while (fread(buffer, 1, 1, in)){            // TODO : DONT read 1 byte at time FIXME
             fwrite(buffer, 1, 1, out);
         }
         fclose(in);
@@ -99,12 +99,12 @@ bool CopyFile(const char* src, const char* dest){
     return isSuccess;
 }
 //----------------------------------------------
-//  deleteFile
+//  DeleteFile
 //----------------------------------------------
 bool DeleteFile(const char* fileToDelete){
     bool isSuccess = true;
     if (remove(fileToDelete) != 0){                // 0 on success, -1 on failure
-       perror("error deleting the file"); 
+        perror("error deleting the file"); 
         isSuccess = false;
     }
 
@@ -115,10 +115,10 @@ bool DeleteFile(const char* fileToDelete){
 //----------------------------------------------
 bool MoveFile(const char* src, const char* dest){
     bool isSuccess = true;
-    if (!CopyFile(src, dest)){
+    if (CopyFile(src, dest) == false){
         isSuccess = false;
     }
-    if ( !DeleteFile(src) ){
+    if (DeleteFile(src) == false){
         isSuccess = false;
     }
 
@@ -138,6 +138,7 @@ bool IsDirectoryNotEmpty(const char* dir){
                 counter += 1;
             }
         }
+
     closedir(dirToCheck);                               // 0 on success, -1 on failure 
     }else{
         perror ("In IsDirectoryNotEmpty(), couldn't open the directory ");
@@ -157,4 +158,32 @@ bool IsDirectoryExists(const char* path){
     closedir(testExist);
     return true;
 }
-
+//----------------------------------------------
+//  safe_strcat() 
+//----------------------------------------------
+char* safe_strcat(char* buffer, const char* str, int buf_size){
+    const int EOF_LENGTH = 1;
+    int buffer_len = strlen(buffer);
+    if (strlen(buffer) + strlen(str) + EOF_LENGTH > buf_size){
+        fprintf(stderr, "[safe_strcat] : Overflow, the buffer is too small!\n");
+        printf("buffer : %s\n", buffer);
+        exit(1);
+    }else{
+        strncat(buffer, str, strlen(str));
+        return buffer;
+    }
+}
+//----------------------------------------------
+//  safe_strcpy() 
+//----------------------------------------------
+char* safe_strcpy(char* buffer, const char* str, int buf_size){
+    const int EOF_LENGTH = 1;
+    if (strlen(str) + EOF_LENGTH > buf_size){
+        fprintf(stderr, "[safe_strcpy] : Overflow, the buffer is too small!\n");
+        exit(1);
+    }else{
+        strncpy(buffer, str, strlen(str));
+        buffer[strlen(str)] = '\0';
+        return buffer;
+    }
+}
