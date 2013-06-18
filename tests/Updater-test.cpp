@@ -164,7 +164,7 @@ TEST(ProcessTestGroup, StartUpdate_newIsEmpty_ReturnsTrue){
 }
 //************************************************************
 //************************************************************
-//                  FileIOTestGroup                             //TODO :: Get rid of redundant tests...
+//                  FileIOTestGroup                             
 //************************************************************
 //************************************************************
 TEST_GROUP(FileIOTestGroup){

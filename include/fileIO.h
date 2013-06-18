@@ -15,4 +15,6 @@ bool IsDirectoryNotEmpty(const char*);
 bool CopyDirRecursively(const char*, const char*);
 bool DeleteDirectoryContent(const char*);
 bool IsDirectoryExists(const char*);
+char* safe_strcat(char*, const char*, int);
+char* safe_strcpy(char*, const char*, int);
 #endif
