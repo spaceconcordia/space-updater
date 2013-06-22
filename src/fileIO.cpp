@@ -24,7 +24,6 @@ bool DeleteDirectoryContent(const char* toDelete){
         while((item = readdir(dirToDelete)) && (isSuccess == true)){
             if (item->d_type == DT_DIR && strncmp(item->d_name, ".", 1) != 0 && strncmp(item->d_name,"..",2) !=0){
                 safe_strcat(safe_strcat(safe_strcpy(path_tempo, toDelete, BUFFER_SIZE), "/", BUFFER_SIZE), item->d_name, BUFFER_SIZE);
-                printf("CHECK : %s\n", path_tempo);
                 DeleteDirectoryContent(path_tempo);
                 rmdir(path_tempo);
 
