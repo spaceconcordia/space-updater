@@ -81,19 +81,38 @@ bool CopyFile(const char* src, const char* dest){
     bool isSuccess = true;
     FILE* in = fopen(src, "rb");
     FILE* out = fopen(dest, "w+b");
-    char* buffer = (char*)malloc(sizeof(char));
+    char* buffer; 
+    int file_size;
+    int numByte;
+
     
     if (in==NULL || out==NULL){
         remove (dest);
         isSuccess = false;
     }else{
-        while (fread(buffer, 1, 1, in)){            // TODO : DONT read 1 byte at time FIXME
-            fwrite(buffer, 1, 1, out);
+        fseek (in , 0 , SEEK_END);
+        file_size = ftell (in);
+        rewind (in);
+        buffer = (char*)malloc(sizeof(char) * file_size);
+        
+        if (buffer == NULL){ 
+            fprintf(stderr, "[CopyFile] : malloc error.\n");
+            isSuccess = false;
+        }else{ 
+            fread(buffer, 1, file_size, in);
+            numByte =  fwrite(buffer, 1, file_size, out);
+            
+            if (numByte != file_size){
+                fprintf(stderr, "[CopyFile] : fread() error.\n");
+                isSuccess = false;
+            }
+            
+            free(buffer);
         }
+
         fclose(in);
         fclose(out);
     }
-    free(buffer);
 
     return isSuccess;
 }
