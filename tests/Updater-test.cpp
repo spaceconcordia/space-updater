@@ -208,6 +208,10 @@ TEST(FileIOTestGroup, CopyFile_FileIsPresent_ReturnsTrue){
     fclose(file);
 
     CHECK(CopyFile(src, dest) == true);
+    
+    file = fopen(dest, "r");
+    CHECK(file != NULL);
+    fclose(file);
 
     remove(src);
     remove(dest);
