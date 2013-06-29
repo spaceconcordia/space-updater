@@ -103,7 +103,7 @@ bool CopyFile(const char* src, const char* dest){
             numByte =  fwrite(buffer, 1, file_size, out);
             
             if (numByte != file_size){
-                fprintf(stderr, "[CopyFile] : fread() error.\n");
+                fprintf(stderr, "[CopyFile] : fread() or fwrite() error.\n");
                 isSuccess = false;
             }
             
