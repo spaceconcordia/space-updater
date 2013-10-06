@@ -20,21 +20,27 @@ Updater::Updater(){                                 // Default : Q6 paths
     oldDirPath = "/home/apps/old";
     currentDirPath = "/home/apps/current";
     rollbackDirPath = "/home/apps/rollback";
+    const char* logsFolder = "/home/apps/logs";
     
-    initialize(newDirPath, currentDirPath, oldDirPath, rollbackDirPath, "log");
+    initialize(newDirPath, currentDirPath, oldDirPath, rollbackDirPath, logsFolder);
 }
 
 Updater::Updater(const char* newDir, const char* currentDir, const char* oldDir, const char* rollPath){
-    initialize(newDir, currentDir, oldDir, rollPath, "log");
+    initialize(newDir, currentDir, oldDir, rollPath, "logs");
 }
 
-Updater::Updater(const char* newDir, const char* currentDir, const char* oldDir, const char* rollPath, const char* logFolder){
-    initialize(newDir, currentDir, oldDir, rollPath, logFolder);
+Updater::Updater(const char* newDir, const char* currentDir, const char* oldDir, const char* rollPath, const char* logsFolder){
+    initialize(newDir, currentDir, oldDir, rollPath, logsFolder);
 }
 
-void Updater::initialize(const char* newDir, const char* currentDir, const char* oldDir, const char* rollPath, const char* logFolder){
-    string log_folder(logFolder);
-    string log_path = log_folder.append("/").append(get_filename("log", "Updater.", ".log").c_str());
+void Updater::initialize(const char* newDir, const char* currentDir, const char* oldDir, const char* rollPath, const char* logsFolder){
+    if (IsDirectoryExists(logsFolder) == false){
+        mkdir(logsFolder, S_IRWXU);
+
+    }
+
+    string log_folder(logsFolder);
+    string log_path = log_folder.append("/").append(get_filename(log_folder, "Updater.", ".log").c_str());
     log = fopen(log_path.c_str(), "w+");
 
     if (IsDirectoryExists(newDir) == true && IsDirectoryExists(currentDir) == true 
