@@ -4,7 +4,8 @@ int main(){
     const char* path_current  = "/home/jamg85/apps/current";
     const char* path_old      = "/home/jamg85/apps/old";
     const char* path_rollback = "/home/jamg85/apps/rollback";
-    Updater* updater = new Updater(path_new, path_current, path_old, path_rollback);
+    const char* log_folder    = "log";
+    Updater* updater = new Updater(path_new, path_current, path_old, path_rollback, log_folder);
     bool isSuccess = updater->StartUpdate();
 
     delete updater;

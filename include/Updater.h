@@ -11,6 +11,7 @@
 #ifndef UPDATER_H_
 #define UPDATER_H_
 #include <dirent.h>
+#include <stdio.h>
 class Updater{
     private :
         static const int BUFFER_SIZE = 100;
@@ -20,12 +21,16 @@ class Updater{
         const char* oldDirPath;
         const char* currentDirPath;
         const char* rollbackDirPath;
+
+        FILE* log;
         
         static const char* rollbackFileName;
     public :
 
         Updater();
         Updater(const char*, const char*, const char*, const char*);
+        Updater(const char*, const char*, const char*, const char*, const char*);
+        void initialize(const char*, const char*, const char*, const char*, const char*);
         ~Updater();
 
         bool StartRollback() const;

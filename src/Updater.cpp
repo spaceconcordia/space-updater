@@ -9,6 +9,8 @@
 #include <unistd.h>     // rmdir
 #include <ProcessUpdater.h>
 #include <cstring>
+#include <string>
+#include "shakespeare.h" 
 const char* Updater::rollbackFileName = "rollback.txt";   
 //----------------------------------------------
 //  Constructor
@@ -18,14 +20,23 @@ Updater::Updater(){                                 // Default : Q6 paths
     oldDirPath = "/home/apps/old";
     currentDirPath = "/home/apps/current";
     rollbackDirPath = "/home/apps/rollback";
-    if (IsDirectoryExists(newDirPath) == false && IsDirectoryExists(currentDirPath) == false 
-                                                    && IsDirectoryExists(oldDirPath) == false 
-                                                        && IsDirectoryExists(rollbackDirPath) == false){
-        perror ("Error... Check that the directories exist.");
-        exit(1);
-    }
+    
+    initialize(newDirPath, currentDirPath, oldDirPath, rollbackDirPath, "log");
 }
+
 Updater::Updater(const char* newDir, const char* currentDir, const char* oldDir, const char* rollPath){
+    initialize(newDir, currentDir, oldDir, rollPath, "log");
+}
+
+Updater::Updater(const char* newDir, const char* currentDir, const char* oldDir, const char* rollPath, const char* logFolder){
+    initialize(newDir, currentDir, oldDir, rollPath, logFolder);
+}
+
+void Updater::initialize(const char* newDir, const char* currentDir, const char* oldDir, const char* rollPath, const char* logFolder){
+    string log_folder(logFolder);
+    string log_path = log_folder.append("/").append(get_filename("log", "Updater.", ".log").c_str());
+    log = fopen(log_path.c_str(), "w+");
+
     if (IsDirectoryExists(newDir) == true && IsDirectoryExists(currentDir) == true 
                                                     && IsDirectoryExists(oldDir) == true 
                                                         && IsDirectoryExists(rollPath) == true){
@@ -33,14 +44,16 @@ Updater::Updater(const char* newDir, const char* currentDir, const char* oldDir,
         oldDirPath = oldDir;
         currentDirPath = currentDir;
         rollbackDirPath = rollPath;
-    
     }else{
-        perror ("Error... Check that the directories exist.");
+        Log(log, ERROR, "Updater", "Directories pass to Updater() do not exist");
         exit(1);
     }
 }
+
 Updater::~Updater(){
-    //*/
+    if (log != NULL){
+        fclose(log);
+    }
 }
 //----------------------------------------------
 //  StartRollback
@@ -54,7 +67,7 @@ bool Updater::StartRollback() const{
         DeleteDirectoryContent(rollbackDirPath);                                                // Clear rollbackDirPath
     }else{
         isSuccess = true;
-        printf("Rollback folder is empty... nothing to do.\n");
+        Log(log, NOTICE, "Updater", "Rollback folder is empty, nothing to do.");
     }
     return isSuccess;
 }
@@ -100,11 +113,9 @@ bool Updater::StartUpdate() const {
     struct dirent* item;
     if (CheckForRollback() == true){
         if (StartRollback() == false){
-            //TODO if StartRollback() fails... LOG 
-            puts("Rollback failed");
+            Log(log, ERROR, "Updater", "Rollback failed");
         }else{
-            //TODO log success
-            puts("Rollback success");
+            Log(log, NOTICE, "Updater", "Rollback success");
         }
     }
      
@@ -119,18 +130,22 @@ bool Updater::StartUpdate() const {
                 current_process = new ProcessUpdater(path_tempo_new, path_tempo_current, path_tempo_old);  
                 isSuccess = current_process->StartUpdate();
                 if (isSuccess == true){
-                    printf("Update success : %s\n", path_tempo_new);
+                    string msg = "Update succes : ";
+                    msg.append(path_tempo_new);
+                    Log(log, NOTICE, "Updater", msg); 
                 }else{
-                    printf("Update failure : %s\n", path_tempo_new);
+                    string msg = "Update failure : ";
+                    msg.append(path_tempo_new);
+                    Log(log, ERROR, "Updater", msg); 
                 }
-                //TODO   if ProcessUpdater fails ... message/log and delete new Job 
+
                 rmdir(path_tempo_new);
                 delete current_process;
             }
         }
     }else{
         isSuccess = true;
-        printf("System is up to date\n");
+        Log(log, NOTICE, "Updater", "System is up to date"); 
     }
     closedir(dir);
     return isSuccess;
@@ -152,7 +167,7 @@ bool Updater::CheckForRollback() const{
 //----------------------------------------------
 bool Updater::IsBackUpAvailable(const char* path) const{
     if (IsDirectoryNotEmpty(path) == false){
-        perror("In IsBackUpAvailable(), no back-up available");
+        Log(log, WARNING, "Updater", "IsBackUpAvailable() : no back-up available."); 
         return false;
     }
     return true;
@@ -167,7 +182,7 @@ void Updater::ExtractPathToRollback(char* path) const{
         fscanf(file, "%s", path);
         fclose(file);
     }else{
-        perror("in ExtractPathToRollback() : can't open the file");
+        Log(log, ERROR, "Updater", "ExtractPathToRollback() : can't open the file."); 
     }
 }
 //----------------------------------------------
