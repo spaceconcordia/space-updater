@@ -15,20 +15,6 @@ const char* Updater::rollbackFileName = "rollback.txt";
 //----------------------------------------------
 //  Constructor
 //----------------------------------------------
-Updater::Updater(){                                 // Default : Q6 paths
-    newDirPath = "/home/apps/new";
-    oldDirPath = "/home/apps/old";
-    currentDirPath = "/home/apps/current";
-    rollbackDirPath = "/home/apps/rollback";
-    const char* logsFolder = "/home/apps/logs";
-    
-    initialize(newDirPath, currentDirPath, oldDirPath, rollbackDirPath, logsFolder);
-}
-
-Updater::Updater(const char* newDir, const char* currentDir, const char* oldDir, const char* rollPath){
-    initialize(newDir, currentDir, oldDir, rollPath, "logs");
-}
-
 Updater::Updater(const char* newDir, const char* currentDir, const char* oldDir, const char* rollPath, const char* logsFolder){
     initialize(newDir, currentDir, oldDir, rollPath, logsFolder);
 }

@@ -27,7 +27,6 @@ class Updater{
         static const char* rollbackFileName;
     public :
 
-        Updater();
         Updater(const char*, const char*, const char*, const char*);
         Updater(const char*, const char*, const char*, const char*, const char*);
         void initialize(const char*, const char*, const char*, const char*, const char*);

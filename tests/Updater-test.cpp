@@ -23,7 +23,8 @@ TEST_GROUP(UpdaterTestGroup)
         mkdir("test-current", S_IRWXU);
         mkdir("test-old", S_IRWXU);
         mkdir("test-rollback", S_IRWXU);
-        updater = new Updater("test-new", "test-current", "test-old", "test-rollback");
+        mkdir("test-logs", S_IRWXU);
+        updater = new Updater("test-new", "test-current", "test-old", "test-rollback", "test-logs");
 
     }
     void teardown(){
@@ -31,10 +32,12 @@ TEST_GROUP(UpdaterTestGroup)
         DeleteDirectoryContent("test-current");
         DeleteDirectoryContent("test-old");
         DeleteDirectoryContent("test-rollback");
+        DeleteDirectoryContent("test-logs");
         rmdir("test-new");                          // rmdir() : the directory HAS to be empty.
         rmdir("test-old");
         rmdir("test-current");
         rmdir("test-rollback");//*/
+        rmdir("test-logs");
         delete updater;
     }
 };
