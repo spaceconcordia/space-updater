@@ -19,6 +19,10 @@ Updater::Updater(const char* newDir, const char* currentDir, const char* oldDir,
     initialize(newDir, currentDir, oldDir, rollPath, logsFolder);
 }
 
+Updater::Updater(const char* newDir, const char* currentDir, const char* oldDir, const char* rollPath){
+    initialize(newDir, currentDir, oldDir, rollPath, "logs");
+}
+
 void Updater::initialize(const char* newDir, const char* currentDir, const char* oldDir, const char* rollPath, const char* logsFolder){
     if (IsDirectoryExists(logsFolder) == false){
         mkdir(logsFolder, S_IRWXU);
