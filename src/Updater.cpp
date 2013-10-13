@@ -26,7 +26,6 @@ Updater::Updater(const char* newDir, const char* currentDir, const char* oldDir,
 void Updater::initialize(const char* newDir, const char* currentDir, const char* oldDir, const char* rollPath, const char* logsFolder){
     if (IsDirectoryExists(logsFolder) == false){
         mkdir(logsFolder, S_IRWXU);
-
     }
 
     string log_folder(logsFolder);
@@ -49,6 +48,7 @@ void Updater::initialize(const char* newDir, const char* currentDir, const char*
 Updater::~Updater(){
     if (log != NULL){
         fclose(log);
+        log = NULL;
     }
 }
 //----------------------------------------------
@@ -59,6 +59,11 @@ bool Updater::StartRollback() const{
     char job_name[BUFFER_NAME_SIZE] = "\0";                                                     
     if (CheckForRollback() == true){
         ExtractJobName(job_name);
+
+        string msg = "Start Rollback : ";
+        msg.append(string(job_name));
+        Log(log, NOTICE, "Updater", msg);
+        
         isSuccess = StartRollback(job_name);
         DeleteDirectoryContent(rollbackDirPath);                                                // Clear rollbackDirPath
     }else{
@@ -123,10 +128,10 @@ bool Updater::StartUpdate() const {
             strcat(strcat(strcpy(path_tempo_old,     oldDirPath),     "/"), item->d_name);
             
             if (item->d_type == DT_DIR && strncmp(item->d_name, ".", 1) != 0 && strncmp(item->d_name,"..",2) !=0){  
-                current_process = new ProcessUpdater(path_tempo_new, path_tempo_current, path_tempo_old);  
+                current_process = new ProcessUpdater(path_tempo_new, path_tempo_current, path_tempo_old, log);  
                 isSuccess = current_process->StartUpdate();
                 if (isSuccess == true){
-                    string msg = "Update succes : ";
+                    string msg = "Update success : ";
                     msg.append(path_tempo_new);
                     Log(log, NOTICE, "Updater", msg); 
                 }else{
@@ -163,7 +168,9 @@ bool Updater::CheckForRollback() const{
 //----------------------------------------------
 bool Updater::IsBackUpAvailable(const char* path) const{
     if (IsDirectoryNotEmpty(path) == false){
-        Log(log, WARNING, "Updater", "IsBackUpAvailable() : no back-up available."); 
+        string msg = "No back-up available : ";
+        msg.append(string(path));
+        Log(log, WARNING, "Updater", msg); 
         return false;
     }
     return true;

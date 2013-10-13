@@ -9,19 +9,27 @@
 #include <sys/stat.h>
 #include <cstring>
 #include <fileIO.h>
+#include "shakespeare.h" 
 //----------------------------------------------
 //  Constructor
 //----------------------------------------------
-ProcessUpdater::ProcessUpdater(){
-    /*  */
-    newJobPath = NULL;
-    currentJobPath = NULL;
-    oldJobPath = NULL;
+ProcessUpdater::ProcessUpdater(const char* newJob, const char* currentJob, const char* oldJob, FILE* logStream){
+    initialize(newJob, currentJob, oldJob, logStream);
 }
-ProcessUpdater::ProcessUpdater(const char* newJob, const char* currentJob, const char* oldJob){
+
+void ProcessUpdater::initialize(const char* newJob, const char* currentJob, const char* oldJob, FILE* logStream){
     newJobPath = newJob;
     oldJobPath = oldJob;
     currentJobPath = currentJob;
+
+    if (logStream == NULL){
+        perror("The FILE* for the logs is NULL... exit");
+        exit(-1);
+    }else{
+        log = logStream;
+    }
+
+
     if (CheckIfNewJobIsNotEmpty() == true){
         DIR* testExist = opendir(currentJobPath);
         if (testExist == NULL){
@@ -40,7 +48,7 @@ ProcessUpdater::ProcessUpdater(const char* newJob, const char* currentJob, const
 //  Destructor
 //----------------------------------------------
 ProcessUpdater::~ProcessUpdater(){
-    /* */
+    //*/
 }
 //----------------------------------------------
 //  StartUpdate
@@ -89,7 +97,9 @@ bool ProcessUpdater::StartUpdate() const{
             retry += 1;
         }
     }else{
-        printf("Empty Job in New... Delete it. \n");
+        string msg = "Empty folder in new... discard it : ";
+        msg.append(string(newJobPath));
+        Log(log, WARNING, "ProcessUpdater", msg);
         isSuccess = true;
     }
     return isSuccess;

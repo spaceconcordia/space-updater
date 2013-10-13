@@ -9,8 +9,11 @@ int main(){
     Updater* updater = new Updater(path_new, path_current, path_old, path_rollback, log_folder);
     
     bool isSuccess = updater->StartUpdate();
-
-    delete updater;
+    
+    if (updater != NULL){
+        delete updater;
+        updater = NULL;
+    }
 
     if (isSuccess == true){
         return 0;

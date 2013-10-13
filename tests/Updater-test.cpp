@@ -7,9 +7,12 @@
 #include <sys/stat.h>
 #include <unistd.h>     // rmdir()
 #include <dirent.h>     // DIR
+#include <string>
 #include "fileIO.h"
 #include "ProcessUpdater.h"
 #include "Updater.h"
+#include "shakespeare.h" 
+using namespace std;
 //************************************************************
 //************************************************************
 //              UpdaterTestGroup
@@ -117,22 +120,43 @@ TEST(UpdaterTestGroup, StartRollback_RollbackUnexistingFile_ReturnsFalse){      
 //************************************************************
 TEST_GROUP(ProcessTestGroup){
     ProcessUpdater* process_updater;
+    FILE* log;
+
     void setup(){
+        const char* logsFolder = "test-ProcessUpdaterLogs";
+        if (IsDirectoryExists(logsFolder) == false){
+            mkdir(logsFolder, S_IRWXU);
+        }
+
+        string log_folder(logsFolder);
+        string log_path = log_folder.append("/").append(get_filename(log_folder, "ProcessUpdater.", ".log").c_str());
+        log = fopen(log_path.c_str(), "w+");
+
         mkdir("test-new", S_IRWXU);
         mkdir("test-old", S_IRWXU);
         mkdir("test-current", S_IRWXU);
-        process_updater = new ProcessUpdater("test-new", "test-current", "test-old");
-
+        process_updater = new ProcessUpdater("test-new", "test-current", "test-old", log);
     }
 
     void teardown(){ //*
+        if (log != NULL){
+            fclose(log);
+            log = NULL;
+        }
+
         DeleteDirectoryContent("test-new");
         DeleteDirectoryContent("test-current");
         DeleteDirectoryContent("test-old");
+        DeleteDirectoryContent("test-ProcessUpdaterLogs");
         rmdir("test-new");
         rmdir("test-old");
-        rmdir("test-current");//*/
-        delete process_updater;
+        rmdir("test-current");
+        rmdir("test-ProcessUpdaterLogs");
+
+        if (process_updater != NULL){
+            delete process_updater;
+            process_updater = NULL;
+        }
     }
 };
 //----------------------------------------------
