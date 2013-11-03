@@ -31,6 +31,11 @@ void Updater::initialize(const char* newDir, const char* currentDir, const char*
     string log_folder(logsFolder);
     string log_path = log_folder.append("/").append(get_filename(log_folder, "Updater.", ".log").c_str());
     log = fopen(log_path.c_str(), "w+");
+    
+    if (log == NULL){
+        perror(log_path.c_str());
+        exit(1);
+    }
 
     if (IsDirectoryExists(newDir) == true && IsDirectoryExists(currentDir) == true 
                                                     && IsDirectoryExists(oldDir) == true 
