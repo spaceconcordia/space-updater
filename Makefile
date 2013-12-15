@@ -1,14 +1,15 @@
 CXX = g++
-MICRO_BLAZE = microblaze-unknown-linux-gnu-g++
-CPPUTEST_HOME = /home/jamg85/CppUTest
-UPDATER_PATH  = /home/jamg85/Concordia/Space/Updater
-SPACE_LIB = /home/jamg85/git/space-lib
+MICROCC=microblazeel-xilinx-linux-gnu-g++
+CPPUTEST_HOME = /home/spaceconcordia/space/space-updater
+UPDATER_PATH  = /home/spaceconcordia/space/space-updater
+SPACE_LIB = /home/spaceconcordia/space/space-lib
 
 CPPFLAGS += -Wall -I$(CPPUTEST_HOME)/include
 CXXFLAGS += -include $(CPPUTEST_HOME)/include/CppUTest/MemoryLeakDetectorNewMacros.h
 CFLAGS += -include $(CPPUTEST_HOME)/include/CppUTest/MemoryLeakDetectorMallocMacros.h
 LD_LIBRARIES = -L$(CPPUTEST_HOME)/lib -lCppUTest -lCppUTestExt
-MICRO_FLAGS = -mcpu=v8.10.a -mxl-barrel-shift -mxl-multiply-high -mxl-pattern-compare -mno-xl-soft-mul -mno-xl-soft-div -mxl-float-sqrt -mhard-float -mxl-float-convert -ffixed-r31 --sysroot /usr/local/lib/mbgcc/microblaze-unknown-linux-gnu/sys-root
+MICROCFLAGS=-mcpu=v8.40.b -mxl-barrel-shift -mxl-multiply-high -mxl-pattern-compare -mno-xl-soft-mul -mno-xl-soft-div -mxl-float-sqrt -mhard-float -mxl-float-convert -mlittle-endian -Wall
+
 INCLUDE = -I$(UPDATER_PATH)/include -I$(SPACE_LIB)/inc -L$(SPACE_LIB)/lib
 
 #
@@ -18,46 +19,46 @@ INCLUDE = -I$(UPDATER_PATH)/include -I$(SPACE_LIB)/inc -L$(SPACE_LIB)/lib
 test : AllTests
 
 fileIO.o: src/fileIO.cpp include/fileIO.h
-	$(CXX) $(INCLUDE) -c $< -o $@
+	$(CXX) $(INCLUDE) -c $< -o ./bin/$@
 
 ProcessUpdater.o : src/ProcessUpdater.cpp include/ProcessUpdater.h include/fileIO.h
-	$(CXX) $(INCLUDE) -c $< -o $@
+	$(CXX) $(INCLUDE) -c $< -o ./bin/$@
 		
 Updater.o :src/Updater.cpp include/Updater.h include/ProcessUpdater.h include/fileIO.h
-	$(CXX) $(INCLUDE) -c $< -o $@ 
+	$(CXX) $(INCLUDE) -c $< -o ./bin/$@ 
 
-AllTests: src/AllTests.cpp tests/Updater-test.cpp fileIO.o ProcessUpdater.o Updater.o
-	$(CXX) $(CFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDE) -I/home/jamg85/Concordia/Space/Updater -o AllTests $^ $(LD_LIBRARIES) -lshakespeare
+AllTests: src/AllTests.cpp tests/Updater-test.cpp ./bin/fileIO.o ./bin/ProcessUpdater.o ./bin/Updater.o
+	$(CXX) $(CFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDE) -o AllTests $^ $(LD_LIBRARIES) -lshakespeare
 
-allPC: PC-Updater
+buildPC: fileIO.o ProcessUpdater.o Updater.o PC-Updater
 
-PC-Updater : src/PC.cpp fileIO.o ProcessUpdater.o Updater.o
-	$(CXX) $(INCLUDE) $^ -o PC-Updater -lshakespeare
+PC-Updater : src/PC.cpp ./bin/fileIO.o ./bin/ProcessUpdater.o ./bin/Updater.o
+	$(CXX) $(INCLUDE) $^ -o ./bin/PC-Updater -lshakespeare
 
 #
 #	Compilation for the Q6. Microblaze.
 #
 
-Q6 : Updater-Q6
+buildQ6 : fileIO-Q6.o ProcessUpdater-Q6.o Updater-Q6.o Updater-Q6 
 
 fileIO-Q6.o: src/fileIO.cpp include/fileIO.h
-	$(MICRO_BLAZE) $(MICRO_FLAGS) $(INCLUDE) -c $< -o $@
+	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -c $< -o ./bin/$@
 
 ProcessUpdater-Q6.o : src/ProcessUpdater.cpp include/ProcessUpdater.h include/fileIO.h
-	$(MICRO_BLAZE) $(MICRO_FLAGS) $(INCLUDE) -c $< -o $@
+	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -c $< -o ./bin/$@
 		
 Updater-Q6.o : src/Updater.cpp include/Updater.h include/ProcessUpdater.h include/fileIO.h
-	$(MICRO_BLAZE) $(MICRO_FLAGS) $(INCLUDE) -c $< -o $@
+	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -c $< -o ./bin/$@
 
-Updater-Q6: src/Q6.cpp fileIO-Q6.o ProcessUpdater-Q6.o Updater-Q6.o
-	$(MICRO_BLAZE) $(MICRO_FLAGS) $(INCLUDE) -o Updater-Q6 $^ -lshakespeare-mbcc
+Updater-Q6: src/Q6.cpp ./bin/fileIO-Q6.o ./bin/ProcessUpdater-Q6.o ./bin/Updater-Q6.o
+	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -o ./bin/Updater-Q6 $^ -lshakespeare-mbcc
 
 #
 # CleanUp
 #
 clean :
-	rm -f *.o *~
+	rm -f *.o *~ ./bin/*.o
 
 cleanAll:
-	rm -f *.o *~
+	rm -f *.o *~ ./bin/*.o
 	rm -f AllTests PC-Updater Updater-Q6
