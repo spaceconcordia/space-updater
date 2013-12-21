@@ -10,7 +10,7 @@ CFLAGS += -include $(CPPUTEST_HOME)/include/CppUTest/MemoryLeakDetectorMallocMac
 LD_LIBRARIES = -L$(CPPUTEST_HOME)/lib -lCppUTest -lCppUTestExt
 MICROCFLAGS=-mcpu=v8.40.b -mxl-barrel-shift -mxl-multiply-high -mxl-pattern-compare -mno-xl-soft-mul -mno-xl-soft-div -mxl-float-sqrt -mhard-float -mxl-float-convert -mlittle-endian -Wall
 
-INCLUDE = -I$(UPDATER_PATH)/include -I$(SPACE_LIB)/inc -L$(SPACE_LIB)/lib
+INCLUDE = -I$(UPDATER_PATH)/include -I$(SPACE_LIB)/shakespeare/inc -L$(SPACE_LIB)/shakespeare/lib
 
 #
 # 	Compilation for CppUTest
