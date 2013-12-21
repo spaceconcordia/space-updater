@@ -114,6 +114,8 @@ bool CopyFile(const char* src, const char* dest){
         fclose(out);
     }
 
+    chmod(dest, S_IRWXU);
+
     return isSuccess;
 }
 //----------------------------------------------
