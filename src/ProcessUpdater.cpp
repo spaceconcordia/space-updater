@@ -9,7 +9,7 @@
 #include <sys/stat.h>
 #include <cstring>
 #include <fileIO.h>
-#include "shakespeare.h" 
+#include "shakespeare.h"
 //----------------------------------------------
 //  Constructor
 //----------------------------------------------
@@ -59,7 +59,7 @@ bool ProcessUpdater::StartUpdate() const{
     if (CheckIfNewJobIsNotEmpty() == true){
         while(CheckIfNewJobIsNotEmpty() == true && isSuccess == false && retry < MAX_RETRY){
             mkdir("tempo", S_IRWXU);
-            
+
             isSuccess = CopyDirRecursively(oldJobPath, "tempo");
 
             if (isSuccess == true){
@@ -99,7 +99,7 @@ bool ProcessUpdater::StartUpdate() const{
     }else{
         string msg = "Empty folder in new... discard it : ";
         msg.append(string(newJobPath));
-        Log(log, WARNING, "ProcessUpdater", msg);
+        Shakespeare::log(log, Shakespeare::WARNING, "ProcessUpdater", msg);
         isSuccess = true;
     }
     return isSuccess;
@@ -108,5 +108,5 @@ bool ProcessUpdater::StartUpdate() const{
 //  CheckIfNewJobIsNotEmpty
 //----------------------------------------------
 bool ProcessUpdater::CheckIfNewJobIsNotEmpty() const{
-   return IsDirectoryNotEmpty(newJobPath); 
+   return IsDirectoryNotEmpty(newJobPath);
 }

@@ -1,8 +1,8 @@
 CXX = g++
 MICROCC=microblazeel-xilinx-linux-gnu-g++
 CPPUTEST_HOME = /home/spaceconcordia/space/space-updater
-UPDATER_PATH  = /home/spaceconcordia/space/space-updater
-SPACE_LIB = /home/spaceconcordia/space/space-lib
+UPDATER_PATH  = ../space-updater
+SPACE_LIB = ../space-lib
 
 CPPFLAGS += -Wall -I$(CPPUTEST_HOME)/include
 CXXFLAGS += -include $(CPPUTEST_HOME)/include/CppUTest/MemoryLeakDetectorNewMacros.h
@@ -23,9 +23,9 @@ fileIO.o: src/fileIO.cpp include/fileIO.h
 
 ProcessUpdater.o : src/ProcessUpdater.cpp include/ProcessUpdater.h include/fileIO.h
 	$(CXX) $(INCLUDE) -c $< -o ./bin/$@
-		
+
 Updater.o :src/Updater.cpp include/Updater.h include/ProcessUpdater.h include/fileIO.h
-	$(CXX) $(INCLUDE) -c $< -o ./bin/$@ 
+	$(CXX) $(INCLUDE) -c $< -o ./bin/$@
 
 AllTests: src/AllTests.cpp tests/Updater-test.cpp ./bin/fileIO.o ./bin/ProcessUpdater.o ./bin/Updater.o
 	$(CXX) $(CFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDE) -o AllTests $^ $(LD_LIBRARIES) -lshakespeare
@@ -39,14 +39,14 @@ PC-Updater : src/PC.cpp ./bin/fileIO.o ./bin/ProcessUpdater.o ./bin/Updater.o
 #	Compilation for the Q6. Microblaze.
 #
 
-buildQ6 : fileIO-Q6.o ProcessUpdater-Q6.o Updater-Q6.o Updater-Q6 
+buildQ6 : fileIO-Q6.o ProcessUpdater-Q6.o Updater-Q6.o Updater-Q6
 
 fileIO-Q6.o: src/fileIO.cpp include/fileIO.h
 	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -c $< -o ./bin/$@
 
 ProcessUpdater-Q6.o : src/ProcessUpdater.cpp include/ProcessUpdater.h include/fileIO.h
 	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -c $< -o ./bin/$@
-		
+
 Updater-Q6.o : src/Updater.cpp include/Updater.h include/ProcessUpdater.h include/fileIO.h
 	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -c $< -o ./bin/$@
 

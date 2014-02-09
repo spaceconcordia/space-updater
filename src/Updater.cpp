@@ -10,8 +10,8 @@
 #include <ProcessUpdater.h>
 #include <cstring>
 #include <string>
-#include "shakespeare.h" 
-const char* Updater::rollbackFileName = "rollback.txt";   
+#include "shakespeare.h"
+const char* Updater::rollbackFileName = "rollback.txt";
 //----------------------------------------------
 //  Constructor
 //----------------------------------------------
@@ -29,23 +29,16 @@ void Updater::initialize(const char* newDir, const char* currentDir, const char*
     }
 
     string log_folder(logsFolder);
-    string log_path = log_folder.append("/").append(get_filename(log_folder, "Updater.", ".log").c_str());
-    log = fopen(log_path.c_str(), "w+");
-    
-    if (log == NULL){
-        perror(log_path.c_str());
-        exit(1);
-    }
-
-    if (IsDirectoryExists(newDir) == true && IsDirectoryExists(currentDir) == true 
-                                                    && IsDirectoryExists(oldDir) == true 
+    log =  Shakespeare::open_log(log_folder, "Updater");
+    if (IsDirectoryExists(newDir) == true && IsDirectoryExists(currentDir) == true
+                                                    && IsDirectoryExists(oldDir) == true
                                                         && IsDirectoryExists(rollPath) == true){
         newDirPath = newDir;
         oldDirPath = oldDir;
         currentDirPath = currentDir;
         rollbackDirPath = rollPath;
     }else{
-        Log(log, ERROR, "Updater", "Directories pass to Updater() do not exist");
+      Shakespeare::log(log, Shakespeare::ERROR, "Updater", "Directories pass to Updater() do not exist");
         exit(1);
     }
 }
@@ -61,19 +54,19 @@ Updater::~Updater(){
 //----------------------------------------------
 bool Updater::StartRollback() const{
     bool isSuccess = false;
-    char job_name[BUFFER_NAME_SIZE] = "\0";                                                     
+    char job_name[BUFFER_NAME_SIZE] = "\0";
     if (CheckForRollback() == true){
         ExtractJobName(job_name);
 
         string msg = "Start Rollback : ";
         msg.append(string(job_name));
-        Log(log, NOTICE, "Updater", msg);
-        
+        Shakespeare::log(log, Shakespeare::NOTICE, "Updater", msg);
+
         isSuccess = StartRollback(job_name);
         DeleteDirectoryContent(rollbackDirPath);                                                // Clear rollbackDirPath
     }else{
         isSuccess = true;
-        Log(log, NOTICE, "Updater", "Rollback folder is empty, nothing to do.");
+        Shakespeare::log(log, Shakespeare::NOTICE, "Updater", "Rollback folder is empty, nothing to do.");
     }
     return isSuccess;
 }
@@ -83,24 +76,24 @@ bool Updater::StartRollback(const char* appName) const{
     int retry = 0;
     char path_tempo_current[BUFFER_SIZE];
     char path_tempo_old[BUFFER_SIZE];
-    char job_name[BUFFER_NAME_SIZE] = "\0";                                                     
+    char job_name[BUFFER_NAME_SIZE] = "\0";
             mkdir("tempo", S_IRWXU);
             strcat(job_name, appName);
             strcat(strcat(strcpy(path_tempo_current, currentDirPath), "/"), job_name);
             strcat(strcat(strcpy(path_tempo_old,     oldDirPath), "/"),     job_name);
         while (isSuccess == false && retry < MAX_RETRY){
-            
+
             isSuccess = CopyDirRecursively(path_tempo_current, "tempo");
 
             if (isSuccess == true){
-                isSuccess = DeleteDirectoryContent(path_tempo_current);       
+                isSuccess = DeleteDirectoryContent(path_tempo_current);
             }
             if (isSuccess == true && IsBackUpAvailable(path_tempo_old) == true){
                 if ((isSuccess = CopyDirRecursively(path_tempo_old, path_tempo_current)) == false){
                     CopyDirRecursively("tempo", path_tempo_current);                                // Restores the original content.
                 }
             }
-                        
+
             DeleteDirectoryContent("tempo");                                                        // Clear the temporary directory.
             rmdir("tempo");                                                                         // Remove temporary dir.
             retry += 1;
@@ -119,30 +112,30 @@ bool Updater::StartUpdate() const {
     struct dirent* item;
     if (CheckForRollback() == true){
         if (StartRollback() == false){
-            Log(log, ERROR, "Updater", "Rollback failed");
+            Shakespeare::log(log, Shakespeare::ERROR, "Updater", "Rollback failed");
         }else{
-            Log(log, NOTICE, "Updater", "Rollback success");
+            Shakespeare::log(log, Shakespeare::NOTICE, "Updater", "Rollback success");
         }
     }
-     
+
     if (CheckForUpdate() == true && CheckForRollback() == false){
         ProcessUpdater* current_process;
         while((item=readdir(dir))){
             strcat(strcat(strcpy(path_tempo_new,     newDirPath),     "/"), item->d_name);
             strcat(strcat(strcpy(path_tempo_current, currentDirPath), "/"), item->d_name);
             strcat(strcat(strcpy(path_tempo_old,     oldDirPath),     "/"), item->d_name);
-            
-            if (item->d_type == DT_DIR && strncmp(item->d_name, ".", 1) != 0 && strncmp(item->d_name,"..",2) !=0){  
-                current_process = new ProcessUpdater(path_tempo_new, path_tempo_current, path_tempo_old, log);  
+
+            if (item->d_type == DT_DIR && strncmp(item->d_name, ".", 1) != 0 && strncmp(item->d_name,"..",2) !=0){
+                current_process = new ProcessUpdater(path_tempo_new, path_tempo_current, path_tempo_old, log);
                 isSuccess = current_process->StartUpdate();
                 if (isSuccess == true){
                     string msg = "Update success : ";
                     msg.append(path_tempo_new);
-                    Log(log, NOTICE, "Updater", msg); 
+                    Shakespeare::log(log, Shakespeare::NOTICE, "Updater", msg);
                 }else{
                     string msg = "Update failure : ";
                     msg.append(path_tempo_new);
-                    Log(log, ERROR, "Updater", msg); 
+                    Shakespeare::log(log, Shakespeare::ERROR, "Updater", msg);
                 }
 
                 rmdir(path_tempo_new);
@@ -151,7 +144,7 @@ bool Updater::StartUpdate() const {
         }
     }else{
         isSuccess = true;
-        Log(log, NOTICE, "Updater", "System is up to date"); 
+        Shakespeare::log(log, Shakespeare::NOTICE, "Updater", "System is up to date");
     }
     closedir(dir);
     return isSuccess;
@@ -160,7 +153,7 @@ bool Updater::StartUpdate() const {
 //  CheckForUpdate
 //----------------------------------------------
 bool Updater::CheckForUpdate() const{
-   return IsDirectoryNotEmpty(newDirPath);  
+   return IsDirectoryNotEmpty(newDirPath);
 }
 //----------------------------------------------
 //  CheckForRollback
@@ -175,7 +168,7 @@ bool Updater::IsBackUpAvailable(const char* path) const{
     if (IsDirectoryNotEmpty(path) == false){
         string msg = "No back-up available : ";
         msg.append(string(path));
-        Log(log, WARNING, "Updater", msg); 
+        Shakespeare::log(log, Shakespeare::WARNING, "Updater", msg);
         return false;
     }
     return true;
@@ -190,7 +183,7 @@ void Updater::ExtractPathToRollback(char* path) const{
         fscanf(file, "%s", path);
         fclose(file);
     }else{
-        Log(log, ERROR, "Updater", "ExtractPathToRollback() : can't open the file."); 
+        Shakespeare::log(log, Shakespeare::ERROR, "Updater", "ExtractPathToRollback() : can't open the file.");
     }
 }
 //----------------------------------------------
