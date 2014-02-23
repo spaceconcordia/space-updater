@@ -1,5 +1,6 @@
 CXX = g++
 MICROCC=microblazeel-xilinx-linux-gnu-g++
+BB = arm-linux-gnueabi-g++
 CPPUTEST_HOME = /home/spaceconcordia/space/space-updater
 UPDATER_PATH  = ../space-updater
 SPACE_LIB = ../space-lib
@@ -53,6 +54,23 @@ Updater-Q6.o : src/Updater.cpp include/Updater.h include/ProcessUpdater.h includ
 Updater-Q6: src/Q6.cpp ./bin/fileIO-Q6.o ./bin/ProcessUpdater-Q6.o ./bin/Updater-Q6.o
 	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -o ./bin/Updater-Q6 $^ -lshakespeare-mbcc
 
+#
+#	Compilation for Beaglebone Black
+#
+
+buildBB : fileIO-bb.o ProcessUpdater-bb.o Updater-bb.o Updater-bb
+
+fileIO-bb.o: src/fileIO.cpp include/fileIO.h
+	$(BB) $(INCLUDE) $(INCLUDE) -c $< -o ./bin/$@
+
+ProcessUpdater-bb.o : src/ProcessUpdater.cpp include/ProcessUpdater.h include/fileIO.h
+	$(BB) $(INCLUDE) $(INCLUDE) -c $< -o ./bin/$@
+
+Updater-bb.o : src/Updater.cpp include/Updater.h include/ProcessUpdater.h include/fileIO.h
+	$(BB) $(INCLUDE) $(INCLUDE) -c $< -o ./bin/$@
+
+Updater-bb: src/Q6.cpp ./bin/fileIO-bb.o ./bin/ProcessUpdater-bb.o ./bin/Updater-bb.o
+	$(BB) $(INCLUDE) $(INCLUDE) -o ./bin/Updater-bb $^ -lshakespeare-BB
 #
 # CleanUp
 #
