@@ -129,7 +129,7 @@ TEST_GROUP(ProcessTestGroup){
         }
 
         string log_folder(logsFolder);
-        string log_path = log_folder.append("/").append(Shakespeare::get_filename(log_folder, "ProcessUpdater.", ".log").c_str());
+        string log_path = Shakespeare::get_filename(log_folder, "ProcessUpdater.", ".log").c_str();
         log = fopen(log_path.c_str(), "w+");
 
         mkdir("test-new", S_IRWXU);
