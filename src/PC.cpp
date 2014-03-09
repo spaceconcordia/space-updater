@@ -6,7 +6,7 @@ int main(){
     const char* path_current  = __PATH__"/apps/current";
     const char* path_old      = __PATH__"/apps/old";
     const char* path_rollback = __PATH__"/apps/rollback";
-    const char* log_folder    = __PATH__"/git/space-updater/logs";
+    const char* log_folder    = __PATH__"/logs";
 
     Updater* updater = new Updater(path_new, path_current, path_old, path_rollback, log_folder);
     
