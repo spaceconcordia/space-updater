@@ -114,7 +114,9 @@ bool CopyFile(const char* src, const char* dest){
         fclose(out);
     }
 
-    chmod(dest, S_IRWXU);
+    struct stat st = {0};
+    stat(src, &st);
+    chmod(dest, st.st_mode & 0777); // Sets permissions
 
     return isSuccess;
 }
