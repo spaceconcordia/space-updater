@@ -51,7 +51,7 @@ bool CopyDirRecursively(const char* src, const char* dest){
     
     DIR* destination = opendir(dest);
     if (destination == NULL){
-        mkdir(dest, S_IRWXU);
+        mkdir(dest, 0777);
     }
     closedir(destination);
 
@@ -62,7 +62,7 @@ bool CopyDirRecursively(const char* src, const char* dest){
             safe_strcat(safe_strcat(safe_strcpy(path_tempo_dest, dest, BUFFER_SIZE), "/", BUFFER_SIZE), item->d_name, BUFFER_SIZE);
             
             if (item->d_type == DT_DIR && strncmp(item->d_name, ".", 1) != 0 && strncmp(item->d_name,"..",2) !=0){  // item is a directory.
-                mkdir(path_tempo_dest, S_IRWXU );
+                mkdir(path_tempo_dest, 0777);
                 isSuccess = CopyDirRecursively(path_tempo_src, path_tempo_dest);
             }else if (item->d_type == DT_REG){                                                                      // item is a file.
                 isSuccess = CopyFile(path_tempo_src, path_tempo_dest);
