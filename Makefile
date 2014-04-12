@@ -1,9 +1,11 @@
 CXX = g++
 MICROCC=microblazeel-xilinx-linux-gnu-g++
 BB = arm-linux-gnueabi-g++
+
 CPPUTEST_HOME = ../space-updater
 UPDATER_PATH  = ../space-updater
 SPACE_LIB = ../space-lib
+SPACE_SCRIPT = ../space-script
 
 CPPFLAGS += -Wall -I$(CPPUTEST_HOME)/include
 CXXFLAGS += -include $(CPPUTEST_HOME)/include/CppUTest/MemoryLeakDetectorNewMacros.h
@@ -11,7 +13,7 @@ CFLAGS += -include $(CPPUTEST_HOME)/include/CppUTest/MemoryLeakDetectorMallocMac
 LD_LIBRARIES = -L$(CPPUTEST_HOME)/lib -lCppUTest -lCppUTestExt
 MICROCFLAGS=-mcpu=v8.40.b -mxl-barrel-shift -mxl-multiply-high -mxl-pattern-compare -mno-xl-soft-mul -mno-xl-soft-div -mxl-float-sqrt -mhard-float -mxl-float-convert -mlittle-endian -Wall
 
-INCLUDE = -I$(UPDATER_PATH)/include -I$(SPACE_LIB)/shakespeare/inc -L$(SPACE_LIB)/shakespeare/lib
+INCLUDE = -I$(UPDATER_PATH)/include -I$(SPACE_LIB)/shakespeare/inc -I$(SPACE_SCRIPT)/include -L$(SPACE_LIB)/shakespeare/lib
 
 #
 # 	Compilation for CppUTest
@@ -19,19 +21,19 @@ INCLUDE = -I$(UPDATER_PATH)/include -I$(SPACE_LIB)/shakespeare/inc -L$(SPACE_LIB
 
 test : AllTests
 
-fileIO.o: src/fileIO.cpp include/fileIO.h
-	$(CXX) $(INCLUDE) -c $< -o ./bin/$@
+bin/fileIO.o: src/fileIO.cpp include/fileIO.h
+	$(CXX) $(INCLUDE) -c $< -o $@
 
-ProcessUpdater.o : src/ProcessUpdater.cpp include/ProcessUpdater.h include/fileIO.h
-	$(CXX) $(INCLUDE) -c $< -o ./bin/$@
+bin/ProcessUpdater.o : src/ProcessUpdater.cpp include/ProcessUpdater.h include/fileIO.h
+	$(CXX) $(INCLUDE) -c $< -o $@
 
-Updater.o :src/Updater.cpp include/Updater.h include/ProcessUpdater.h include/fileIO.h
-	$(CXX) $(INCLUDE) -c $< -o ./bin/$@
+bin/Updater.o :src/Updater.cpp include/Updater.h include/ProcessUpdater.h include/fileIO.h
+	$(CXX) $(INCLUDE) -c $< -o $@
 
 AllTests: src/AllTests.cpp tests/Updater-test.cpp ./bin/fileIO.o ./bin/ProcessUpdater.o ./bin/Updater.o
 	$(CXX) $(CFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDE) -o AllTests $^ $(LD_LIBRARIES) -lshakespeare
 
-buildPC: fileIO.o ProcessUpdater.o Updater.o PC-Updater
+buildBin: bin/fileIO.o bin/ProcessUpdater.o bin/Updater.o PC-Updater
 
 PC-Updater : src/PC.cpp ./bin/fileIO.o ./bin/ProcessUpdater.o ./bin/Updater.o
 	$(CXX) $(INCLUDE) $^ -o ./bin/PC-Updater -lshakespeare
@@ -40,16 +42,16 @@ PC-Updater : src/PC.cpp ./bin/fileIO.o ./bin/ProcessUpdater.o ./bin/Updater.o
 #	Compilation for the Q6. Microblaze.
 #
 
-buildQ6 : fileIO-Q6.o ProcessUpdater-Q6.o Updater-Q6.o Updater-Q6
+buildQ6 : bin/fileIO-Q6.o bin/ProcessUpdater-Q6.o bin/Updater-Q6.o Updater-Q6
 
-fileIO-Q6.o: src/fileIO.cpp include/fileIO.h
-	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -c $< -o ./bin/$@
+bin/fileIO-Q6.o: src/fileIO.cpp include/fileIO.h
+	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -c $< -o $@
 
-ProcessUpdater-Q6.o : src/ProcessUpdater.cpp include/ProcessUpdater.h include/fileIO.h
-	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -c $< -o ./bin/$@
+bin/ProcessUpdater-Q6.o : src/ProcessUpdater.cpp include/ProcessUpdater.h include/fileIO.h
+	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -c $< -o $@
 
-Updater-Q6.o : src/Updater.cpp include/Updater.h include/ProcessUpdater.h include/fileIO.h
-	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -c $< -o ./bin/$@
+bin/Updater-Q6.o : src/Updater.cpp include/Updater.h include/ProcessUpdater.h include/fileIO.h
+	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -c $< -o $@
 
 Updater-Q6: src/Q6.cpp ./bin/fileIO-Q6.o ./bin/ProcessUpdater-Q6.o ./bin/Updater-Q6.o
 	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -o ./bin/Updater-Q6 $^ -lshakespeare-mbcc
@@ -58,16 +60,16 @@ Updater-Q6: src/Q6.cpp ./bin/fileIO-Q6.o ./bin/ProcessUpdater-Q6.o ./bin/Updater
 #	Compilation for Beaglebone Black
 #
 
-buildBB : fileIO-bb.o ProcessUpdater-bb.o Updater-bb.o Updater-bb
+buildBB : bin/fileIO-bb.o bin/ProcessUpdater-bb.o bin/Updater-bb.o bin/Updater-bb
 
-fileIO-bb.o: src/fileIO.cpp include/fileIO.h
-	$(BB) $(INCLUDE) $(INCLUDE) -c $< -o ./bin/$@
+bin/fileIO-bb.o: src/fileIO.cpp include/fileIO.h
+	$(BB) $(INCLUDE) $(INCLUDE) -c $< -o $@
 
-ProcessUpdater-bb.o : src/ProcessUpdater.cpp include/ProcessUpdater.h include/fileIO.h
-	$(BB) $(INCLUDE) $(INCLUDE) -c $< -o ./bin/$@
+bin/ProcessUpdater-bb.o : src/ProcessUpdater.cpp include/ProcessUpdater.h include/fileIO.h
+	$(BB) $(INCLUDE) $(INCLUDE) -c $< -o $@
 
-Updater-bb.o : src/Updater.cpp include/Updater.h include/ProcessUpdater.h include/fileIO.h
-	$(BB) $(INCLUDE) $(INCLUDE) -c $< -o ./bin/$@
+bin/Updater-bb.o : src/Updater.cpp include/Updater.h include/ProcessUpdater.h include/fileIO.h
+	$(BB) $(INCLUDE) $(INCLUDE) -c $< -o $@
 
 Updater-bb: src/Q6.cpp ./bin/fileIO-bb.o ./bin/ProcessUpdater-bb.o ./bin/Updater-bb.o
 	$(BB) $(INCLUDE) $(INCLUDE) -o ./bin/Updater-bb $^ -lshakespeare-BB

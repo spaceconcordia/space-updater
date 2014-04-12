@@ -1,12 +1,11 @@
-#include <Updater.h>
+#include "SpaceDecl.h"
+#include "Updater.h"
 int main(){
-    #undef __PATH__
-    #define __PATH__ "/home/jamg85/space"
-    const char* path_new      = __PATH__"/apps/new";
-    const char* path_current  = __PATH__"/apps/current";
-    const char* path_old      = __PATH__"/apps/old";
-    const char* path_rollback = __PATH__"/apps/rollback";
-    const char* log_folder    = __PATH__"/logs";
+    const char* path_new      = CS1_APPS"/new";
+    const char* path_current  = CS1_APPS"/current";
+    const char* path_old      = CS1_APPS"/old";
+    const char* path_rollback = CS1_APPS"/rollback";
+    const char* log_folder    = CS1_LOGS;
 
     Updater* updater = new Updater(path_new, path_current, path_old, path_rollback, log_folder);
     

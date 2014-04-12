@@ -3,13 +3,14 @@
 //  
 //
 //******************************************/
-#include <fileIO.h>
 #include <cstring>
 #include <sys/types.h>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <cstdio>
+
+#include "fileIO.h"
 
 const int BUFFER_SIZE = 100;
 //----------------------------------------------

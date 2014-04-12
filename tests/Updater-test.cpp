@@ -3,11 +3,13 @@
 //
 //
 //******************************************/
-#include "CppUTest/TestHarness.h"
 #include <sys/stat.h>
 #include <unistd.h>     // rmdir()
 #include <dirent.h>     // DIR
 #include <string>
+
+#include "CppUTest/TestHarness.h"
+
 #include "fileIO.h"
 #include "ProcessUpdater.h"
 #include "Updater.h"
@@ -48,7 +50,6 @@ TEST_GROUP(UpdaterTestGroup)
 //  StartUpdate 
 //----------------------------------------------
 TEST(UpdaterTestGroup, StartUpdate_NewFolderIsNotEmptyAndRollback_ReturnsTrue){
-    printf("StartUpdate_NewFolderIsNotEmptyAndRollback_ReturnsTrue : ");
     mkdir("test-new/JobA", S_IRWXU);
         FILE* JobANew = fopen("test-new/JobA/new-JobA.txt", "w+");
         fprintf(JobANew,"some text to test");

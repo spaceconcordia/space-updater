@@ -3,12 +3,14 @@
 //
 //
 //******************************************/
-#include <ProcessUpdater.h>
 #include <cstdio>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <cstring>
-#include <fileIO.h>
+
+#include "SpaceDecl.h"
+#include "fileIO.h"
+#include "ProcessUpdater.h"
 #include "shakespeare.h"
 //----------------------------------------------
 //  Constructor
