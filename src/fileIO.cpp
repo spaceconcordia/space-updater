@@ -156,7 +156,7 @@ bool IsDirectoryNotEmpty(const char* dir){
     int counter=0;
 
     if (dirToCheck != NULL){
-        while (item = readdir(dirToCheck)){
+        while ((item = readdir(dirToCheck))){
             if (strncmp(item->d_name, ".", 1) != 0 && strncmp(item->d_name,"..",2)!=0 ){
                 counter += 1;
             }
@@ -184,9 +184,9 @@ bool IsDirectoryExists(const char* path){
 //----------------------------------------------
 //  safe_strcat() 
 //----------------------------------------------
-char* safe_strcat(char* buffer, const char* str, int buf_size){
+char* safe_strcat(char* buffer, const char* str, size_t buf_size){
     const int EOF_LENGTH = 1;
-    int buffer_len = strlen(buffer);
+
     if (strlen(buffer) + strlen(str) + EOF_LENGTH > buf_size){
         fprintf(stderr, "[safe_strcat] : Overflow, the buffer is too small!\n");
         printf("buffer : %s\n", buffer);
@@ -199,7 +199,7 @@ char* safe_strcat(char* buffer, const char* str, int buf_size){
 //----------------------------------------------
 //  safe_strcpy() 
 //----------------------------------------------
-char* safe_strcpy(char* buffer, const char* str, int buf_size){
+char* safe_strcpy(char* buffer, const char* str, size_t buf_size){
     const int EOF_LENGTH = 1;
     if (strlen(str) + EOF_LENGTH > buf_size){
         fprintf(stderr, "[safe_strcpy] : Overflow, the buffer is too small!\n");
