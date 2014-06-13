@@ -2,7 +2,7 @@ CXX = g++
 MICROCC=microblazeel-xilinx-linux-gnu-g++
 BB = arm-linux-gnueabi-g++
 
-CPPUTEST_HOME = ../space-updater
+CPPUTEST_HOME = ../CppUTest
 UPDATER_PATH  = ../space-updater
 SPACE_LIB = ../space-lib
 SPACE_SCRIPT = ../space-script
