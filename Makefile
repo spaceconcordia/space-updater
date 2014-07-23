@@ -4,6 +4,7 @@ BB = arm-linux-gnueabi-g++
 
 CPPUTEST_HOME = ../CppUTest
 UPDATER_PATH  = ../space-updater
+UTLS_DIR = 	../space-lib/utls
 SPACE_LIB = ../space-lib
 SPACE_SCRIPT = ../space-script
 
@@ -13,13 +14,16 @@ CFLAGS += -include $(CPPUTEST_HOME)/include/CppUTest/MemoryLeakDetectorMallocMac
 LD_LIBRARIES = -L$(CPPUTEST_HOME)/lib -lCppUTest -lCppUTestExt
 MICROCFLAGS=-mcpu=v8.40.b -mxl-barrel-shift -mxl-multiply-high -mxl-pattern-compare -mno-xl-soft-mul -mno-xl-soft-div -mxl-float-sqrt -mhard-float -mxl-float-convert -mlittle-endian -Wall
 
-INCLUDE = -I$(UPDATER_PATH)/include -I$(SPACE_LIB)/shakespeare/inc -I$(SPACE_LIB)/include -L$(SPACE_LIB)/shakespeare/lib
+INCLUDE = -I$(UPDATER_PATH)/include -I$(SPACE_LIB)/shakespeare/inc -I$(SPACE_LIB)/include -L$(SPACE_LIB)/lib -L$(SPACE_LIB)/shakespeare/lib
 
 #
 # 	Compilation for CppUTest
 #
 
 test : AllTests
+
+bin/Date.o : $(UTLS_DIR)/src/Date.cpp $(UTLS_DIR)/include/Date.h $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) -I$(UTLS_DIR)/include/ $(CXXFLAGS) -c $(UTLS_DIR)/src/Date.cpp -o $@
 
 bin/fileIO.o: src/fileIO.cpp include/fileIO.h
 	$(CXX) $(INCLUDE) -c $< -o $@
@@ -33,7 +37,7 @@ bin/Updater.o :src/Updater.cpp include/Updater.h include/ProcessUpdater.h includ
 AllTests: src/AllTests.cpp tests/Updater-test.cpp ./bin/fileIO.o ./bin/ProcessUpdater.o ./bin/Updater.o
 	$(CXX) $(CFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDE) -o AllTests $^ $(LD_LIBRARIES) -lshakespeare
 
-buildBin: bin/fileIO.o bin/ProcessUpdater.o bin/Updater.o PC-Updater
+buildBin: bin/fileIO.o bin/Date.o bin/ProcessUpdater.o bin/Updater.o PC-Updater
 
 PC-Updater : src/PC.cpp ./bin/fileIO.o ./bin/ProcessUpdater.o ./bin/Updater.o
 	$(CXX) $(INCLUDE) $^ -o ./bin/PC-Updater -lshakespeare
