@@ -16,6 +16,10 @@ MICROCFLAGS=-mcpu=v8.40.b -mxl-barrel-shift -mxl-multiply-high -mxl-pattern-comp
 
 INCLUDE = -I$(UPDATER_PATH)/include -I$(SPACE_LIB)/shakespeare/inc -I$(SPACE_LIB)/include -L$(SPACE_LIB)/lib -L$(SPACE_LIB)/shakespeare/lib
 
+MKDIR = mkdir -fp $(UTLS_DIR)/bin
+LIBRARIES = -lshakespeare -lcs1_utls
+LIBRARIESMBCC = -lshakespeare-mbcc -lcs1_utlsQ6
+
 #
 # 	Compilation for CppUTest
 #
@@ -31,22 +35,22 @@ bin/fileIO.o: src/fileIO.cpp include/fileIO.h
 bin/ProcessUpdater.o : src/ProcessUpdater.cpp include/ProcessUpdater.h include/fileIO.h
 	$(CXX) $(INCLUDE) -c $< -o $@
 
-bin/Updater.o :src/Updater.cpp include/Updater.h include/ProcessUpdater.h include/fileIO.h
+bin/Updater.o : src/Updater.cpp include/Updater.h include/ProcessUpdater.h include/fileIO.h
 	$(CXX) $(INCLUDE) -c $< -o $@
 
 AllTests: src/AllTests.cpp tests/Updater-test.cpp ./bin/fileIO.o ./bin/ProcessUpdater.o ./bin/Updater.o
-	$(CXX) $(CFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDE) -o AllTests $^ $(LD_LIBRARIES) -lshakespeare
+	$(CXX) $(CFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(INCLUDE) -o AllTests $^ $(LD_LIBRARIES) $(LIBRARIES)
 
-buildBin: bin/fileIO.o bin/Date.o bin/ProcessUpdater.o bin/Updater.o PC-Updater
+buildBin: $(MKDIR) bin/fileIO.o bin/Date.o bin/ProcessUpdater.o bin/Updater.o PC-Updater
 
-PC-Updater : src/PC.cpp ./bin/fileIO.o ./bin/ProcessUpdater.o ./bin/Updater.o
-	$(CXX) $(INCLUDE) $^ -o ./bin/PC-Updater -lshakespeare
+PC-Updater : $(MKDIR) src/PC.cpp ./bin/fileIO.o ./bin/ProcessUpdater.o ./bin/Updater.o
+	$(CXX) $(INCLUDE) $^ -o ./bin/PC-Updater $(LIBRARIES)
 
 #
 #	Compilation for the Q6. Microblaze.
 #
 
-buildQ6 : bin/fileIO-Q6.o bin/ProcessUpdater-Q6.o bin/Updater-Q6.o Updater-Q6
+buildQ6 : $(MKDIR) bin/fileIO-Q6.o bin/ProcessUpdater-Q6.o bin/Updater-Q6.o Updater-Q6
 
 bin/fileIO-Q6.o: src/fileIO.cpp include/fileIO.h
 	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -c $< -o $@
@@ -58,13 +62,13 @@ bin/Updater-Q6.o : src/Updater.cpp include/Updater.h include/ProcessUpdater.h in
 	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -c $< -o $@
 
 Updater-Q6: src/Q6.cpp ./bin/fileIO-Q6.o ./bin/ProcessUpdater-Q6.o ./bin/Updater-Q6.o
-	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -o ./bin/Updater-Q6 $^ -lshakespeare-mbcc
+	$(MICROCC) $(MICROCFLAGS) $(INCLUDE) -o ./bin/Updater-Q6 $^ $(LIBRARIESMBCC)
 
 #
 #	Compilation for Beaglebone Black
 #
 
-buildBB : bin/fileIO-bb.o bin/ProcessUpdater-bb.o bin/Updater-bb.o bin/Updater-bb
+buildBB : $(MKDIR) bin/fileIO-bb.o bin/ProcessUpdater-bb.o bin/Updater-bb.o bin/Updater-bb
 
 bin/fileIO-bb.o: src/fileIO.cpp include/fileIO.h
 	$(BB) $(INCLUDE) $(INCLUDE) -c $< -o $@

@@ -221,3 +221,11 @@ char* safe_strcpy(char* buffer, const char* str, size_t buf_size)
         return buffer;
     }
 }
+
+//----------------------------------------------
+//  IsFileExists() 
+//----------------------------------------------
+bool IsFileExists(const char* file) {
+   struct stat buffer;
+   return (stat(file,&buffer) == 0); 
+}

@@ -17,4 +17,5 @@ bool DeleteDirectoryContent(const char*);
 bool IsDirectoryExists(const char*);
 char* safe_strcat(char*, const char*, size_t);
 char* safe_strcpy(char*, const char*, size_t);
+bool IsFileExists(const char*);
 #endif
